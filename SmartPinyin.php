@@ -7,11 +7,11 @@ require_once 'base/SmartPinyinBase.php';
 require_once 'CnConvert.sample.php';
 
 
-interface SmartPinyinSettings
+interface SmartPinyinSettingsInterface
 {
     public function setCnConvert();
 }
-class SmartPinyin extends SmartPinyinBase implements SmartPinyinSettings
+class SmartPinyin extends SmartPinyinBase implements SmartPinyinSettingsInterface
 {    
     public function setCnConvert()
     {
