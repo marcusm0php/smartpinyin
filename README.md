@@ -35,6 +35,8 @@ Library requires PHP 7.* or later
 -----
 ```php
 <?php 
+// ... 
+
 require_once 'SmartPinyin.php';
 use SmartPinyin\SmartPinyin as SmartPinyin;
 $smartPinyin = new SmartPinyin();
@@ -83,6 +85,8 @@ array(4) {
 示例
 ```php
 <?php
+// ...
+
 $smartPinyin->setData('woshi smart pinyin');
 $smartPinyin->assocSelf();
 $smartPinyin->assocPinyin();
@@ -196,6 +200,8 @@ Settings设置-setCollectNotPinyinAbcChar()
 示例
 ```php
 <?php
+// ...
+
 $smartPinyin->setCollectNotPinyinAbcChar(true);
 
 $smartPinyin->setData('你好 xyz china asldkjadskad pinyin');
@@ -363,6 +369,7 @@ Settings设置-setDynamicGlue()
 ```php
 <?php
 //...
+
 $smartPinyin->setDynamicGlue(true);
 $smartPinyin->setData('woshipinyin');
 $smartPinyin->assocSelf();
@@ -406,6 +413,8 @@ array(4) {
 结合setGlues()一起使用
 ```php
 <?php
+// ...
+
 $smartPinyin->setGlues([' ', '-']);
 $smartPinyin->setDynamicGlue(true);
 $smartPinyin->setData('woshipinyin');
@@ -470,6 +479,7 @@ Settings设置-setSupplementScope()
 ```php
 <?php
 // ...
+
 $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_NAME]);
 $smartPinyin->setData('陈');
 $smartPinyin->assocSelf();
@@ -526,6 +536,8 @@ Settings设置-setSingleYmCharSplit()
 示例
 ```php
 <?php
+// ...
+
 $smartPinyin->setDynamicGlue(true);
 $smartPinyin->setSingleYmCharSplit(true);
 $smartPinyin->setData('xinan');
