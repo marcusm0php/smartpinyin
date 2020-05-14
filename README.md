@@ -24,7 +24,9 @@ Library requires PHP 7.* or later
 	 实现时间：（）
 2. 音调支持，目前版本不支持音调哦。$smartPinyin->assocPinyin(SmartPinyin::PINYIN_TONE_NONE);预留了SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL，目前仅支持PINYIN_TONE_NONE。<br />
 	 实现时间：（）
-3. 设置标点符号识别，并在联想词中保留，方法名setPunctuation()，实现如setPunctuation([',', '。', '.'....])<br />
+3. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
+	 实现时间：（）
+3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不回被分词为拼音。setKeepEnglishword(boolean)<br />
 	 实现时间：（）
 	 
 已完成计划
