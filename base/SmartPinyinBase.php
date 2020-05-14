@@ -80,6 +80,8 @@ class SmartPinyinBase
     protected $_dynamic_glue = false;
     protected $_supplement_scope = [];
     protected $_single_ymchar_split = true;
+    protected $_collect_cn_char = false;
+    protected $_collect_not_pinyin_abc_char = false;
     protected $_assoc = [];
     protected $_chars = [];
     
@@ -112,6 +114,8 @@ class SmartPinyinBase
         $this->setSupplementScope([]);
         $this->setSingleYmCharSplit(false);
         $this->setDynamicGlue(false);
+        $this->setCollectCnChar(false);
+        $this->setCollectNotPinyinAbcChar(false);
     }
     
     public function clearFetchs()
@@ -177,6 +181,16 @@ class SmartPinyinBase
         $this->_single_ymchar_split = $singleYmCharSplit;
     }
     
+    public function setCollectCnChar($collectCnChar = false)
+    {
+        $this->_collect_cn_char = $collectCnChar;
+    }
+    
+    public function setCollectNotPinyinAbcChar($collectNotPinyinAbcChar = false)
+    {
+        $this->_collect_not_pinyin_abc_char = $collectNotPinyinAbcChar;
+    }
+    
     public function fetchAssoc()
     {
         return $this->_assoc;
@@ -210,13 +224,23 @@ class SmartPinyinBase
             $glue = isset($this->_glues[0])? $this->_glues[0] : ' ';
             foreach(explode($glue, $c) as $cc){
                 foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
-                    foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
-                        foreach(WHOLE_SM_YMS as $kk => $smym){
-                            preg_match('/^('.$ym.'|(?:'.$smym.'))/', $ccc, $match);
-                            if(!empty($match[0]) && $match[0] == $ccc){
-                                if(!in_array($ccc, $this->_chars)){
-                                    $this->_chars[] = $ccc;
-                                    goto __GOTO_NEXT_CC;
+                    if(!in_array($ccc, $this->_chars)){
+                        if(self::IsAllChinese($ccc)){
+                            if($this->_collect_cn_char){
+                                $this->_chars[] = $ccc;
+                            }
+                        }else{
+                            if($this->_collect_not_pinyin_abc_char){
+                                $this->_chars[] = $ccc;
+                            }else{
+                                foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
+                                    foreach(WHOLE_SM_YMS as $smym){
+                                        preg_match('/^('.$ym.'|(?:'.$smym.'))/', $ccc, $match);
+                                        if(!empty($match[0]) && $match[0] == $ccc){
+                                            $this->_chars[] = $ccc;
+                                            goto __GOTO_NEXT_CC;
+                                        }
+                                    }
                                 }
                             }
                         }
