@@ -15,6 +15,7 @@ Library requires PHP 7.* or later
 1. 本工具类并不提供中文-->拼音的转换方法，使用者请自行替换CnConvert.sample.php类，通过实现CnConvertInterface接口，按照接口要求实现ToPinyin()方法。
 2. SmartPinyin类通过实现SmartPinyinSettingsInterface接口中的setCnConvert()方法，将（1）中的CnConvert对象指定给SmartPinyin::$_CnConvert
 3. 库中目前提供的extensions/sample/Pinyin类，非本人作品，仅在此作为中文-->拼音的用法示例。并按照（1）（2）方法集成给本类使用。该类支持的方法还是挺好的，感谢原作者。
+4. 目前实现过程算法没有经过效率测试，以实现功能为主要目标
 
 
 计划
@@ -27,7 +28,7 @@ Library requires PHP 7.* or later
 3. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
 	 实现时间：（）
 3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不会被分词为拼音。setKeepEnglishword(boolean)<br />
-	 如china，先在将会被分词为chi na ， 如果setKeepEnglishword(true)，china作为确定的英文单词，将会被放弃分词作为一个整体。该功能考虑引入exceptions设置例外单词。
+	 如china，现在将会被分词为chi和na ， 如果setKeepEnglishword(true)，china作为确定的英文单词，将会被放弃分词作为一个整体。该功能考虑引入exceptions设置例外单词。<br />
 	 实现时间：（）
 	 
 已完成计划
