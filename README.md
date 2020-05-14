@@ -26,7 +26,8 @@ Library requires PHP 7.* or later
 	 实现时间：（）
 3. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
 	 实现时间：（）
-3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不回被分词为拼音。setKeepEnglishword(boolean)<br />
+3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不会被分词为拼音。setKeepEnglishword(boolean)<br />
+	 如china，先在将会被分词为chi na ， 如果setKeepEnglishword(true)，china作为确定的英文单词，将会被放弃分词作为一个整体。该功能考虑引入exceptions设置例外单词。
 	 实现时间：（）
 	 
 已完成计划
