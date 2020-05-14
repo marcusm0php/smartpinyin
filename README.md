@@ -24,6 +24,12 @@ Library requires PHP 7.* or later
 	 实现时间：（）
 2. 音调支持，目前版本不支持音调哦。$smartPinyin->assocPinyin(SmartPinyin::PINYIN_TONE_NONE);预留了SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL，目前仅支持PINYIN_TONE_NONE。<br />
 	 实现时间：（）
+3. 设置标点符号识别，并在联想词中保留，方法名setPunctuation()，实现如setPunctuation([',', '。', '.'....])<br />
+	 实现时间：（）
+	 
+已完成计划
+-----
+
 
 基础用法
 -----
@@ -74,6 +80,7 @@ array(4) {
 元词如果整体能够被完全解析为拼音，则会进一步被解析。<br />
 注意，中文中含有大量文字拼音结构整体为韵母。如“饿”，“昂”等。故，如jie可以被解析为jie,ji,e三个分词<br />
 但是如果原串是提供中文，将不会被进一步解析，只会得出中文对应全拼作为一个分词。如“姐”虽然拼音是jie，但仅会被分词为jie<br />
+示例
 ```php
 <?php
 $smartPinyin->setData('woshi smart pinyin');
@@ -142,7 +149,7 @@ array(4) {
 
 Settings设置-setCollectCnChar()
 -----
-作用： 设置为true后，fetchChars()的结果集中将包含中文单字
+作用： 设置为true后，fetchChars()的结果集中将包含中文单字<br />
 示例
 ```php
 <?php
@@ -185,7 +192,7 @@ array(6) {
 
 Settings设置-setCollectNotPinyinAbcChar()
 -----
-作用: 设置为true后，fetchChars()的结果集中将包含非中文、非拼音的字符串元词（可能是无法解析为拼音的英文单词，也可能无意义的字符串）
+作用: 设置为true后，fetchChars()的结果集中将包含非中文、非拼音的字符串元词（可能是无法解析为拼音的英文单词，也可能无意义的字符串）<br />
 示例
 ```php
 <?php
@@ -238,7 +245,7 @@ array(10) {
 
 Settings设置-setFilter()
 -----
-过滤原串中的指定字符，使其避免干扰分词和拼音结构识别。
+过滤原串中的指定字符，使其避免干扰分词和拼音结构识别。<br />
 示例
 ```php
 <?php
@@ -313,8 +320,7 @@ array(4) {
 
 Settings设置-setGlues()
 -----
-作用：设置分隔符，可指定多个
-
+作用：设置分隔符，可指定多个<br />
 示例
 ```php
 <?php
@@ -352,8 +358,7 @@ array(4) {
 
 Settings设置-setDynamicGlue()
 -----
-作用: 动态拼装分词。将所有分词，按照指定分隔符，排列组合得出所有分开/合并的联想词情形。
-
+作用: 动态拼装分词。将所有分词，按照指定分隔符，排列组合得出所有分开/合并的联想词情形。<br />
 示例
 ```php
 <?php
@@ -461,7 +466,6 @@ Settings设置-setSupplementScope()
 作用: 类内目前提供了两个单字识别的补充索引库,分别为SmartPinyin::SCOPE_DUOYINZI, SmartPinyin::SCOPE_NAME<br />
 <b>SmartPinyin::SCOPE_DUOYINZI</b>: 多音字补充索引。对应数组文件存放于dict/lang.pinyin.duoyinzi.cfg.php下，可根据需要自行按照已有结构进行补充<br />
 <b>SmartPinyin::SCOPE_NAME</b>: 多国地区姓氏拼音支持。对应数组文件存放于dict/lang.pinyin.name.cfg.php下，可根据需要自行按照已有结构进行补充<br />
-
 示例
 ```php
 <?php
