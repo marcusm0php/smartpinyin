@@ -11,7 +11,7 @@ Library requires PHP 7.* or later
 
 前言
 -----
-中文-->拼音的转换方法已经有很多，本工具类并不提供中文-->拼音的转换方法。只是在简单转换的基础上，提供一些更加友好的设置支持，使输出尽可能多样化满足不同场景需求。
+中文-->拼音的转换方法已经有很多，本工具类并不提供最底层基础的中文-->拼音的转换方法。只是在简单转换的基础上，提供一些更加友好的设置支持，使输出尽可能多样化满足不同场景需求。
 1. 本工具类并不提供中文-->拼音的转换方法，使用者请自行替换CnConvert.sample.php类，通过实现CnConvertInterface接口，按照接口要求实现ToPinyin()方法。
 2. SmartPinyin类通过实现SmartPinyinSettingsInterface接口中的setCnConvert()方法，将（1）中的CnConvert对象指定给SmartPinyin::$_CnConvert
 3. 库中目前提供的extensions/sample/Pinyin类，非本人作品，仅在此作为中文-->拼音的用法示例。并按照（1）（2）方法集成给本类使用。该类支持的方法还是挺好的，感谢原作者。
