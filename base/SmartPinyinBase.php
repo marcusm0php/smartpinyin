@@ -84,7 +84,9 @@ class SmartPinyinBase
     protected $_collect_cn_char = false;
     protected $_collect_not_pinyin_abc_char = false;
     protected $_assoc = [];
+    protected $_assoc_capital = [];
     protected $_chars = [];
+    protected $_chars_capital = [];
     
     
     public static $PINYIN_YUNMU = array(
@@ -139,7 +141,7 @@ class SmartPinyinBase
             $this->clearFetchs();
         }
         
-        $this->_value = trim($value);
+        $this->_value = iconv('', 'utf-8', trim($value));
         $this->filterData();
         
         $this->valueSplitCnPinyin();
@@ -206,9 +208,19 @@ class SmartPinyinBase
         return $this->_assoc;
     }
     
+    public function fetchCapitalAssoc()
+    {
+        return $this->_assoc_capital;
+    }
+    
     public function fetchChars()
     {
         return $this->_chars;
+    }
+    
+    public function fetchCapitalChars()
+    {
+        return $this->_chars_capital;
     }
     
     public function pushAssoc($assoc)
@@ -217,9 +229,27 @@ class SmartPinyinBase
             $assoc = [$assoc];
         }
         
+        $gluesSearch = '/[\\'. implode('\\', $this->_glues) .']+/';
+        $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
         foreach($assoc as $a){
             if(!in_array($a, $this->_assoc)){
                 $this->_assoc[] = $a;
+                
+                if(self::HasChinese($a)){
+                    continue;
+                }
+                $aSplits = array_filter(preg_split($gluesSearch, $a));
+                preg_match($gluesSearch, $a, $aGlue);
+                $aGlue = isset($aGlue[0])? $aGlue[0] : '';
+                $aCapitals = [];
+                foreach($aSplits as $k => $aSplit){
+                    $aSplitCapital = substr($aSplit, 0, 1);
+                    preg_match($punctuationSearch, $aSplit, $aSplitPunctuations);
+                    $aSplitPunctuations = isset($aSplitPunctuations[0])? $aSplitPunctuations[0] : '';
+                    
+                    $aCapitals[] = $aSplitCapital . $aSplitPunctuations;
+                }
+                $this->_assoc_capital[] = implode($aGlue, $aCapitals);
             }
         }
     }
@@ -235,20 +265,30 @@ class SmartPinyinBase
             foreach(explode($glue, $c) as $cc){
                 foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
                     $cccFilterPunctuations = str_replace($this->_punctuations, '', $ccc);
+                    $cccCapital = substr($ccc, 0, 1);
                     if(!in_array($cccFilterPunctuations, $this->_chars)){
                         if(self::IsAllChinese($cccFilterPunctuations)){
                             if($this->_collect_cn_char){
                                 $this->_chars[] = $cccFilterPunctuations;
+                                if(!in_array($cccCapital, $this->_chars_capital)){
+                                    $this->_chars_capital[] = $cccCapital;
+                                }
                             }
                         }else{
                             if($this->_collect_not_pinyin_abc_char){
                                 $this->_chars[] = $cccFilterPunctuations;
+                                if(!in_array($cccCapital, $this->_chars_capital)){
+                                    $this->_chars_capital[] = $cccCapital;
+                                }
                             }else{
                                 foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
                                     foreach(WHOLE_SM_YMS as $smym){
                                         preg_match('/^('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
                                         if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
                                             $this->_chars[] = $cccFilterPunctuations;
+                                            if(!in_array($cccCapital, $this->_chars_capital)){
+                                                $this->_chars_capital[] = $cccCapital;
+                                            }
                                             goto __GOTO_NEXT_CC;
                                         }
                                     }
@@ -295,7 +335,7 @@ class SmartPinyinBase
         }
         
         
-        $punctionSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
+        $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
         $value_splited_k = 0;
         foreach($valueSplited as $v){
             if(in_array($v, $this->_punctuations)){
@@ -304,8 +344,8 @@ class SmartPinyinBase
                 $this->_value_splited[$value_splited_k_prev] = $this->_value_splited[$value_splited_k_prev] . $v;
                 $value_splited_k++;
             }else{
-                preg_match_all($punctionSearch, $v, $vPunctuations);
-                $vSplits = array_filter(preg_split($punctionSearch, $v));
+                preg_match_all($punctuationSearch, $v, $vPunctuations);
+                $vSplits = array_filter(preg_split($punctuationSearch, $v));
                 $vPunctuations_k = 0;
                 foreach($vSplits as $k => $vSplit){
                     if(isset($vPunctuations[0][$k])){
@@ -341,12 +381,12 @@ class SmartPinyinBase
      */
     public function assocPinyin($pinyinTone = self::PINYIN_TONE_NONE)
     {
-        $punctionSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
+        $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
         foreach($this->_glues as $glue){
             $charPinyin = array();
             foreach($this->_value_splited as $k => $char){
                 $k_char = $k . $char;
-                preg_match($punctionSearch, $char, $charPunctuations);
+                preg_match($punctuationSearch, $char, $charPunctuations);
                 $charPunctuations = isset($charPunctuations[0])? $charPunctuations[0] : '';
                 $charWithoutPunctuations = str_replace($charPunctuations, '', $char);
                 $charPinyin[$k_char] = [];
@@ -443,9 +483,9 @@ class SmartPinyinBase
             $combs = self::CharPinYinsComb($charPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
             
             if(!empty($this->_punctuations)){
-                $punctionReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
+                $punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
                 foreach($combs as $k => $comb){
-                    $combs[$k] = preg_replace($punctionReplaceSearch, '\1', $comb);
+                    $combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
                 }
             }
             
@@ -709,11 +749,11 @@ class SmartPinyinBase
         if($deep == 0){
             $strPunctuations = '';
             if(!empty($punctuations)){
-                $punctionSearch = '([\\'. implode('\\', $punctuations) .']+)';
-                preg_match($punctionSearch, $str, $strPunctuations);
+                $punctuationSearch = '([\\'. implode('\\', $punctuations) .']+)';
+                preg_match($punctuationSearch, $str, $strPunctuations);
                 $strPunctuations = isset($strPunctuations[0])? $strPunctuations[0] : '';
                 
-                $str = preg_replace($punctionSearch, '', $str);
+                $str = preg_replace($punctuationSearch, '', $str);
             }
         }
         
@@ -769,5 +809,10 @@ class SmartPinyinBase
     public static function IsAllChinese($str)
     {
         return preg_match('/^[\x{4e00}-\x{9fa5}]+$/u', $str) && true;
+    }
+    
+    public static function HasChinese($str)
+    {
+        return preg_match('/[\x{4e00}-\x{9fa5}]/u', $str) && true;
     }
 }
