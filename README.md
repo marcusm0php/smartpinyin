@@ -157,10 +157,10 @@ array(4) {
 fetch结果获取
 -----
 共四个方法：<br />
-<b>fetchAssoc():<b /> 获取联想字符串结果集。<br />
-<b>fetchCapitalAssoc():<b /> 获取联想字符串结果集，仅包含首字母，及标点符号(如果设置了保留标点符号列表)。<br />
-<b>fetchChars():<b /> 获取单字拼音结果集。<br />
-<b>fetchCapitalChars():<b />获取单字拼音结果集，仅包含首字母。<br />
+fetchAssoc(): 获取联想字符串结果集。<br />
+fetchCapitalAssoc(): 获取联想字符串结果集，仅包含首字母，及标点符号(如果设置了保留标点符号列表)。<br />
+fetchChars(): 获取单字拼音结果集。<br />
+fetchCapitalChars():获取单字拼音结果集，仅包含首字母。<br />
 
 
 Settings设置-setCollectCnChar()
