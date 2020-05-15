@@ -17,7 +17,6 @@ define('_SP_', chr(0xFF).chr(0xFE));
 define('UCS2', 'ucs-2be');
 class PhpAnalysis
 {
-    
     //hash算法选项
     public $mask_value = 0xFFFF;
     
@@ -1133,5 +1132,3 @@ class PhpAnalysis
         return true;
      }
 }
-
-?> 

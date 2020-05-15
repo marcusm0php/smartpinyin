@@ -1,4 +1,4 @@
-<?php
+<?php 
 namespace SmartPinyin;
 use SmartPinyin\SmartPinyinBase as SmartPinyinBase;
 use SmartPinyin\CnConvert as CnConvert;
