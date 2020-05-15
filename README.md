@@ -25,14 +25,14 @@ Library requires PHP 7.* or later
 	 实现时间：（）
 2. 音调支持，目前版本不支持音调哦。$smartPinyin->assocPinyin(SmartPinyin::PINYIN_TONE_NONE);预留了SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL，目前仅支持PINYIN_TONE_NONE。<br />
 	 实现时间：（）
-3. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
-	 实现时间：（）
 3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不会被分词为拼音。setKeepEnglishword(boolean)<br />
 	 如china，现在将会被分词为chi和na ， 如果setKeepEnglishword(true)，china作为确定的英文单词，将会被放弃分词作为一个整体。该功能考虑引入exceptions设置例外单词。<br />
 	 实现时间：（）
 	 
 已完成计划
 -----
+1. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
+	 实现时间：（）
 
 
 基础用法
