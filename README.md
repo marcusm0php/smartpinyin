@@ -171,7 +171,7 @@ Settings设置-setCollectCnChar()
 <?php
 //...
 
-$smartPinyin->setCollectCnChar(true);->setCollectCnChar(true);
+$smartPinyin->setCollectCnChar(true);
 $smartPinyin->setData('你好 xyz pinyin');
 $smartPinyin->assocSelf();
 $smartPinyin->assocPinyin();
