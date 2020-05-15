@@ -328,6 +328,45 @@ array(4) {
 }
 ```
 
+
+Settings设置-setPunctuations()
+-----
+作用：设置保留标点符号，可指定多个。被保留的标点符号不会影响到分词被识别为pinyin，其余符号如果与拼音相邻，会导致一个拼音被识别为一个普通字符串元词。<br />
+如setPunctuations([',','.'])设置了,和.为保留标点符号，则pinyin,或pinyin.将被识别为拼音，并进一步进行分词。而pinyin!只会被整体识别为字符串元词'pinyin!'。<br />
+<b>注意，<b />setFilter()指定的过滤元素优先级高于如setPunctuations()，如同时设置setFilter([',','.'])和setPunctuations([',','.'])，','和'.'将会被首先直接过滤。<br />
+示例
+```php
+<?php
+$smartPinyin->setPunctuations([',', '.']);
+$smartPinyin->setData('beijing,.上海.hubei!');
+$smartPinyin->assocSelf();
+$smartPinyin->assocPinyin();
+$assoc = $smartPinyin->fetchAssoc();
+$chars = $smartPinyin->fetchChars();
+var_dump($assoc, $chars);
+```
+输出
+```php
+array(3) {
+  [0]=>
+  string(22) "beijing,.上海.hubei!"
+  [1]=>
+  string(27) "beijing,. shang hai. hubei!"
+  [2]=>
+  string(28) "bei jing,. shang hai. hubei!"
+}
+array(4) {
+  [0]=>
+  string(3) "bei"
+  [1]=>
+  string(4) "jing"
+  [2]=>
+  string(5) "shang"
+  [3]=>
+  string(3) "hai"
+}
+```
+
 Settings设置-setGlues()
 -----
 作用：设置分隔符，可指定多个<br />
