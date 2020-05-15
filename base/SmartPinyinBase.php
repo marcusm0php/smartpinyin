@@ -279,18 +279,21 @@ class SmartPinyinBase
                     in_array($v, $this->_glues) ||
                     (preg_match('/[\x{4e00}-\x{9fa5}]/u', $v) !== preg_match('/[\x{4e00}-\x{9fa5}]/u', $prev)) ||
                     preg_match('/[\x{4e00}-\x{9fa5}]/u', $v) === 1
-                    ){
+                ){
+                    if(!in_array($v, $this->_punctuations)){
                         $i++;
+                    }
                 }
                 
-                if(!in_array($v, $this->_glues) || in_array($v, $this->_punctuations)){
+                if(!in_array($v, $this->_glues)){
                     if(!isset($valueSplited[$i])){
                         $valueSplited[$i] = '';
                     }
-                    $valueSplited[$i] .= $v;
+                    $valueSplited[$i] = $valueSplited[$i] . $v;
                 }
             }
         }
+        
         
         $punctionSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
         $value_splited_k = 0;
@@ -316,7 +319,7 @@ class SmartPinyinBase
         }
             
         $this->_value_splited = array_filter($this->_value_splited);
-
+        
         $this->pushChar($this->_value_splited);
     }
     
@@ -359,10 +362,9 @@ class SmartPinyinBase
                     
                     $this->pushChar($pinyins);
                     foreach($pinyins as $pinyin){
-                        $charPinyin[$k_char][] = $pinyin . $charPunctuations;
-                    }
-                    if(!self::IsAllChinese($charWithoutPunctuations)){
-                        foreach($pinyins as $pinyin){
+                        if(self::IsAllChinese($charWithoutPunctuations)){
+                            $charPinyin[$k_char][] = str_replace($charPunctuations, '', $pinyin) . $charPunctuations;
+                        }else{
                             $pinyinAnalyzers = self::PinyinAnalyzer($pinyin, $this->_punctuations);
                             
                             $this->pushChar($pinyinAnalyzers['chars']);
