@@ -817,6 +817,12 @@ class SmartPinyinBase
                                 $charMatches[$seq][] = $match[0];
                             }
                         }
+                    }else{
+                        if($splitNotWholePinyin){
+                            if(!in_array($str, $charMatches[$seq])){
+                                $charMatches[$seq][] = $str;
+                            }
+                        }
                     }
                 }
             }

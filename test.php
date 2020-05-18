@@ -31,7 +31,7 @@ $smartPinyin->setSplitNotWholePinyin(true);
 // $assoc = $smartPinyin->fetchAssoc();
 // $chars = $smartPinyin->fetchChars();
 // var_dump($assoc, $chars);
-$batchRet = $smartPinyin->batchSetDataAssocAll('beihhhhjing');
+$batchRet = $smartPinyin->batchSetDataAssocAll('cup');
 var_dump($batchRet);
 
 // $assocCapital = $smartPinyin->fetchCapitalAssoc();
