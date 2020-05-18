@@ -12,13 +12,18 @@ $smartPinyin->setPunctuations([',', '.']);
 // $smartPinyin->setSingleYmCharSplit(true);
 // $smartPinyin->setCollectCnChar(true);
 // $smartPinyin->setCollectNotPinyinAbcChar(true);
-$smartPinyin->addEntireWholePinyins([
-    'mao', 'lao', 'xiao', 'xia', 'qia', 'jia', 
-    'guo', 'tuo', 'zhuo', 'chuo', 'kuo', 'luo', 'duo', 'nuo', 'cuo', 'zuo', 'huo', 
-    'gua', 'kua', 'kua', 'zhua', 'hua', 
-    'xue', 'que', 'jue', 
-    'xie', 'qie', 'lie', 'jie', 'pie', 'die', 'bie', 'nie', 'mie'
-]);
+$smartPinyin->setSplitNotWholePinyin(true);
+// $smartPinyin->addEntireWholePinyins([
+//     'mao', 'lao', 'bao', 'kao', 'zao', 'cao', 'yao', 'pao', 'nao', 'tao', 'hao', 'gao', 'dao', 'sao',  
+//     'miao', 'niao', 'piao', 'qiao', 'biao', 'xiao', 'liao', 'jiao', 'tiao', 
+//     'mian', 'nian', 'pian', 'qian', 'bian', 'xian', 'lian', 'jian', 'tian', 
+//     'jiang', 'qiang', 'liang', 'xiang', 'niang',  
+//     'xia', 'qia', 'jia', 
+//     'guo', 'tuo', 'zhuo', 'chuo', 'kuo', 'luo', 'duo', 'nuo', 'cuo', 'zuo', 'huo', 
+//     'gua', 'kua', 'kua', 'zhua', 'hua', 
+//     'xue', 'que', 'jue', 
+//     'xie', 'qie', 'lie', 'jie', 'pie', 'die', 'bie', 'nie', 'mie'
+// ]);
 
 // $smartPinyin->setData('08 Aug 1950 mao');
 // $smartPinyin->assocSelf();
@@ -26,7 +31,7 @@ $smartPinyin->addEntireWholePinyins([
 // $assoc = $smartPinyin->fetchAssoc();
 // $chars = $smartPinyin->fetchChars();
 // var_dump($assoc, $chars);
-$batchRet = $smartPinyin->batchSetDataAssocAll('cuohuo zhua');
+$batchRet = $smartPinyin->batchSetDataAssocAll('beihhhhjing');
 var_dump($batchRet);
 
 // $assocCapital = $smartPinyin->fetchCapitalAssoc();
