@@ -21,19 +21,19 @@ Library requires PHP 7.* or later
 计划
 -----
 往后版本将逐步实现以下计划功能：
-1. 首字母提取，  如nihao--->n,h。<br />
+1. 音调支持，目前版本不支持音调哦。$smartPinyin->assocPinyin(SmartPinyin::PINYIN_TONE_NONE);预留了SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL，目前仅支持PINYIN_TONE_NONE。<br />
 	 实现时间：（）
-2. 音调支持，目前版本不支持音调哦。$smartPinyin->assocPinyin(SmartPinyin::PINYIN_TONE_NONE);预留了SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL，目前仅支持PINYIN_TONE_NONE。<br />
-	 实现时间：（）
-3. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不会被分词为拼音。setKeepEnglishword(boolean)<br />
+2. 识别英文单词，通过设置开关，使英文单词即使完全能够被解析为pinyin的情况下，也不会被分词为拼音。setKeepEnglishword(boolean)<br />
 	 如china，现在将会被分词为chi和na ， 如果setKeepEnglishword(true)，china作为确定的英文单词，将会被放弃分词作为一个整体。该功能考虑引入exceptions设置例外单词。<br />
 	 实现时间：（）
 	 
 已完成计划
 -----
 1. 设置标点符号识别，并在联想词中保留，方法名setPunctuations()，实现如setPunctuations([',', '。', '.'....])<br />
-	 实现时间：（）
-
+	 实现时间：（2020-05-15）
+2. 首字母提取，  如nihao--->n,h。<br />
+	 新增两个fetch方法：fetchCapitalAssoc()和fetchCapitalChars()
+	 实现时间：（2020-05-15）
 
 基础用法
 -----
@@ -154,6 +154,14 @@ array(4) {
 3. 只有元词整体能被完全分析为拼音的情况下，元词被分词。woshi被分词为wo和shi，pinyin被分词为pin和yin；
 5. 元词不是“全拼音”则不会被进一步分词。如smart中，虽然按照拼音结构，能够解析出ma，但是考虑到英文单词中，含有大量符合声母韵母的结构，如果进一步解析，将会过度
 
+fetch结果获取
+-----
+共四个方法：<br />
+fetchAssoc(): 获取联想字符串结果集。<br />
+fetchCapitalAssoc(): 获取联想字符串结果集，仅包含首字母，及标点符号(如果设置了保留标点符号列表)。<br />
+fetchChars(): 获取单字拼音结果集。<br />
+fetchCapitalChars():获取单字拼音结果集，仅包含首字母。<br />
+
 
 Settings设置-setCollectCnChar()
 -----
@@ -163,7 +171,7 @@ Settings设置-setCollectCnChar()
 <?php
 //...
 
-$smartPinyin->setCollectCnChar(true);->setCollectCnChar(true);
+$smartPinyin->setCollectCnChar(true);
 $smartPinyin->setData('你好 xyz pinyin');
 $smartPinyin->assocSelf();
 $smartPinyin->assocPinyin();
@@ -333,7 +341,7 @@ Settings设置-setPunctuations()
 -----
 作用：设置保留标点符号，可指定多个。被保留的标点符号不会影响到分词被识别为pinyin，其余符号如果与拼音相邻，会导致一个拼音被识别为一个普通字符串元词。<br />
 如setPunctuations([',','.'])设置了,和.为保留标点符号，则pinyin,或pinyin.将被识别为拼音，并进一步进行分词。而pinyin!只会被整体识别为字符串元词'pinyin!'。<br />
-<b>注意，<b />setFilter()指定的过滤元素优先级高于如setPunctuations()，如同时设置setFilter([',','.'])和setPunctuations([',','.'])，','和'.'将会被首先直接过滤。<br />
+注意，setFilter()指定的过滤元素优先级高于如setPunctuations()，如同时设置setFilter([',','.'])和setPunctuations([',','.'])，','和'.'将会被首先直接过滤。<br />
 示例
 ```php
 <?php
