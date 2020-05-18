@@ -126,14 +126,13 @@ class SmartPinyinBase
     public function clearFetchs()
     {
         $this->_assoc = [];
+        $this->_assoc_capital = [];
         $this->_chars = [];
+        $this->_chars_capital = [];
         $this->_value_splited = [];
     }
     
-    public function setCnConvert()
-    {
-        
-    }
+    public function setCnConvert(){}
     
     public function setData($value, $clear = true)
     {
@@ -145,6 +144,15 @@ class SmartPinyinBase
         $this->filterData();
         
         $this->valueSplitCnPinyin();
+    }
+    
+    public function batchSetDataAssocAll($value, $fetchAssoc = true, $fetchChars = true, $fetchAssocCapital = false, $fetchCharsCapital = false)
+    {
+        $this->setData($value);
+        $this->assocSelf();
+        $this->assocPinyin();
+        
+        return $this->fetchAll($fetchAssoc, $fetchChars, $fetchAssocCapital, $fetchCharsCapital);
     }
     
     public function getData()
@@ -221,6 +229,25 @@ class SmartPinyinBase
     public function fetchCapitalChars()
     {
         return $this->_chars_capital;
+    }
+    
+    public function fetchAll($fetchAssoc = true, $fetchChars = true, $fetchAssocCapital = false, $fetchCharsCapital = false)
+    {
+        $ret = [];
+        if($fetchAssoc){
+            $ret['assoc'] = $this->_assoc;
+        }
+        if($fetchChars){
+            $ret['chars'] = $this->_chars;
+        }
+        if($fetchAssocCapital){
+            $ret['assoc_capital'] = $this->_assoc_capital;
+        }
+        if($fetchCharsCapital){
+            $ret['chars_capital'] = $this->_chars_capital;
+        }
+        
+        return $ret;
     }
     
     public function pushAssoc($assoc)

@@ -12,11 +12,16 @@ $smartPinyin->setPunctuations([',', '.']);
 // $smartPinyin->setSingleYmCharSplit(true);
 // $smartPinyin->setCollectCnChar(true);
 // $smartPinyin->setCollectNotPinyinAbcChar(true);
-$smartPinyin->setData('我beijing,.上海.hubei!');
-$smartPinyin->assocSelf();
-$smartPinyin->assocPinyin();
-$assoc = $smartPinyin->fetchAssoc();
-$assocCapital = $smartPinyin->fetchCapitalAssoc();
-$chars = $smartPinyin->fetchChars();
-$charsCapital = $smartPinyin->fetchCapitalChars();
-var_dump($assoc, $assocCapital, $chars, $charsCapital);
+
+// $smartPinyin->setData('08 Aug 1950 mao');
+// $smartPinyin->assocSelf();
+// $smartPinyin->assocPinyin();
+// $assoc = $smartPinyin->fetchAssoc();
+// $chars = $smartPinyin->fetchChars();
+// var_dump($assoc, $chars);
+$batchRet = $smartPinyin->batchSetDataAssocAll('08 Aug 1950 mao');
+var_dump($batchRet);
+
+// $assocCapital = $smartPinyin->fetchCapitalAssoc();
+// $charsCapital = $smartPinyin->fetchCapitalChars();
+// var_dump($assocCapital, $charsCapital);
