@@ -1,0 +1,13 @@
+{  
+    "name":"2453302174/smartpinyin",  
+    "description":"smart pinyin analyzer",  
+    "authors":[  
+        {  
+            "name":"MarcusM0",  
+            "email":"2453302174@qq.com" 
+        }  
+    ],  
+    "minimum-stability":"dev",  
+    "require":{},  
+    "autoload":{} 
+}
