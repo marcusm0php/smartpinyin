@@ -163,7 +163,7 @@ fetchCapitalChars(): 获取单字拼音结果集，仅包含首字母。<br />
 fetchAll($fetchAssoc = true, $fetchChars = true, $fetchAssocCapital = false, $fetchCharsCapital = false): 根据参数设置，一次性获取以上几种结果
 
 
-Settings设置-setCollectCnChar()
+Settings设置-setCollectCnChar(),设置字符集是否收集中文单字
 -----
 作用： 设置为true后，fetchChars()的结果集中将包含中文单字<br />
 示例
@@ -206,7 +206,7 @@ array(6) {
 ```
 
 
-Settings设置-setCollectNotPinyinAbcChar()
+Settings设置-setCollectNotPinyinAbcChar()，设置字符集是否收集非拼音、非中文的元词。
 -----
 作用: 设置为true后，fetchChars()的结果集中将包含非中文、非拼音的字符串元词（可能是无法解析为拼音的英文单词，也可能无意义的字符串）<br />
 示例
@@ -261,7 +261,7 @@ array(10) {
 }
 ```
 
-Settings设置-setFilter()
+Settings设置-setFilter()，设置原文过滤字符集。
 -----
 过滤原串中的指定字符，使其避免干扰分词和拼音结构识别。<br />
 示例
@@ -337,7 +337,7 @@ array(4) {
 ```
 
 
-Settings设置-setPunctuations()
+Settings设置-setPunctuations()，设置原文可识别标点符号集。
 -----
 作用：设置保留标点符号，可指定多个。被保留的标点符号不会影响到分词被识别为pinyin，其余符号如果与拼音相邻，会导致一个拼音被识别为一个普通字符串元词。<br />
 如setPunctuations([',','.'])设置了,和.为保留标点符号，则pinyin,或pinyin.将被识别为拼音，并进一步进行分词。而pinyin!只会被整体识别为字符串元词'pinyin!'。<br />
@@ -375,7 +375,7 @@ array(4) {
 }
 ```
 
-Settings设置-setGlues()
+Settings设置-setGlues()， 设置分词拼接符。
 -----
 作用：设置分隔符，可指定多个<br />
 示例
@@ -413,7 +413,7 @@ array(4) {
 }
 ```
 
-Settings设置-setDynamicGlue()
+Settings设置-setDynamicGlue()，设置是否动态拼接分词。
 -----
 作用: 动态拼装分词。将所有分词，按照指定分隔符，排列组合得出所有分开/合并的联想词情形。<br />
 示例
@@ -521,7 +521,7 @@ array(4) {
 }
 ```
 
-Settings设置-setSupplementScope()
+Settings设置-setSupplementScope()，设置中文--拼音识别补充字典。
 -----
 作用: 类内目前提供了两个单字识别的补充索引库,分别为SmartPinyin::SCOPE_DUOYINZI, SmartPinyin::SCOPE_NAME<br />
 <b>SmartPinyin::SCOPE_DUOYINZI</b>: 多音字补充索引。对应数组文件存放于dict/lang.pinyin.duoyinzi.cfg.php下，可根据需要自行按照已有结构进行补充<br />
@@ -581,7 +581,7 @@ array(7) {
 }
 ```
 
-Settings设置-setSingleYmCharSplit()
+Settings设置-setSingleYmCharSplit()，设置单韵母字的拼音是否使用“韵母分隔符”进行标记。
 -----
 作用: 单韵母分词是有使用“韵母分隔符”进行分割，如：xinan。如果启动动态分词setDynamicGlue(true)，结果中将包含xin`an<br />
 示例
@@ -620,10 +620,55 @@ array(4) {
   [3]=>
   string(2) "an"
 }
+```
 
+Settings设置-setSplitNotWholePinyin()，设置是否对非完整拼音进行识别分析。
+-----
+说明: 对不完全是拼音的整词，设置是否进行拆分联想<br />
 
+示例
+```php
+<?php
+// ...
 
-Settings设置-Entire Whole Pinyins相关方法
+$batchRet = $smartPinyin->batchSetDataAssocAll('beihhhhjing');
+var_dump($batchRet);
+$smartPinyin->setSplitNotWholePinyin(true);
+$batchRet = $smartPinyin->batchSetDataAssocAll('beihhhhjing');
+var_dump($batchRet);
+```
+输出
+```php
+array(2) {
+  ["assoc"]=>
+  array(1) {
+    [0]=>
+    string(11) "beihhhhjing"
+  }
+  ["chars"]=>
+  array(0) {
+  }
+}
+
+array(2) {
+  ["assoc"]=>
+  array(2) {
+    [0]=>
+    string(11) "beihhhhjing"
+    [1]=>
+    string(13) "bei hhhh jing"
+  }
+  ["chars"]=>
+  array(2) {
+    [0]=>
+    string(3) "bei"
+    [1]=>
+    string(4) "jing"
+  }
+}
+```
+
+Settings设置-Entire Whole Pinyins相关方法（设置指定元词，指定元词不可进一步被拆分）
 -----
 说明: 设置整词后，整词列表中的元素，不会被进一步拆分。使用场合举例：避免将类似guo拆分联想为guo,gu,o；统一识别为整体guo<br />
 
