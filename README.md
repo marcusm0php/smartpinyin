@@ -156,11 +156,11 @@ array(4) {
 
 fetch结果获取
 -----
-共四个方法：<br />
 fetchAssoc(): 获取联想字符串结果集。<br />
 fetchCapitalAssoc(): 获取联想字符串结果集，仅包含首字母，及标点符号(如果设置了保留标点符号列表)。<br />
 fetchChars(): 获取单字拼音结果集。<br />
-fetchCapitalChars():获取单字拼音结果集，仅包含首字母。<br />
+fetchCapitalChars(): 获取单字拼音结果集，仅包含首字母。<br />
+fetchAll($fetchAssoc = true, $fetchChars = true, $fetchAssocCapital = false, $fetchCharsCapital = false): 根据参数设置，一次性获取以上几种结果
 
 
 Settings设置-setCollectCnChar()
@@ -583,7 +583,7 @@ array(7) {
 
 Settings设置-setSingleYmCharSplit()
 -----
-作用: 单韵母分词是有使用“韵母分隔符”进行分割，如：xinan。如果启动动态分词setDynamicGlue(true)，结果中将包含xin`an
+作用: 单韵母分词是有使用“韵母分隔符”进行分割，如：xinan。如果启动动态分词setDynamicGlue(true)，结果中将包含xin`an<br />
 示例
 ```php
 <?php
@@ -620,3 +620,100 @@ array(4) {
   [3]=>
   string(2) "an"
 }
+
+
+
+Settings设置-Entire Whole Pinyins相关方法
+-----
+说明: 设置整词后，整词列表中的元素，不会被进一步拆分。使用场合举例：避免将类似guo拆分联想为guo,gu,o；统一识别为整体guo<br />
+
+相关方法: <br />
+setEntireWholePinyins($entireWholePinyins = []): 把整词列表设置为一个或多个整词。<br />
+addEntireWholePinyins($entireWholePinyins = []): 追加一个或多个整词到列表中。<br />
+removeEntireWholePinyins($entireWholePinyins = []): 从列表中移除一个或多个整词。<br />
+
+示例
+```php
+<?php
+// ...
+
+
+$batchRet = $smartPinyin->batchSetDataAssocAll('cuohuo zhua');
+var_dump($batchRet);
+$smartPinyin->addEntireWholePinyins([
+    'mao', 'lao', 'xiao', 'xia', 'qia', 'jia', 
+    'guo', 'tuo', 'zhuo', 'chuo', 'kuo', 'luo', 'duo', 'nuo', 'cuo', 'zuo', 'huo', 
+    'gua', 'kua', 'kua', 'zhua', 'hua', 
+    'xue', 'que', 'jue', 
+    'xie', 'qie', 'lie', 'jie', 'pie', 'die', 'bie', 'nie', 'mie'
+]);
+$batchRet = $smartPinyin->batchSetDataAssocAll('cuohuo zhua');
+var_dump($batchRet);
+```
+输出
+```php
+array(2) {
+  ["assoc"]=>
+  array(10) {
+    [0]=>
+    string(11) "cuohuo zhua"
+    [1]=>
+    string(12) "cuohuo zhu a"
+    [2]=>
+    string(14) "cu o hu o zhua"
+    [3]=>
+    string(15) "cu o hu o zhu a"
+    [4]=>
+    string(13) "cu o huo zhua"
+    [5]=>
+    string(14) "cu o huo zhu a"
+    [6]=>
+    string(13) "cuo hu o zhua"
+    [7]=>
+    string(14) "cuo hu o zhu a"
+    [8]=>
+    string(12) "cuo huo zhua"
+    [9]=>
+    string(13) "cuo huo zhu a"
+  }
+  ["chars"]=>
+  array(8) {
+    [0]=>
+    string(4) "zhua"
+    [1]=>
+    string(2) "cu"
+    [2]=>
+    string(1) "o"
+    [3]=>
+    string(2) "hu"
+    [4]=>
+    string(3) "huo"
+    [5]=>
+    string(3) "cuo"
+    [6]=>
+    string(3) "zhu"
+    [7]=>
+    string(1) "a"
+  }
+}
+
+
+array(2) {
+  ["assoc"]=>
+  array(2) {
+    [0]=>
+    string(11) "cuohuo zhua"
+    [1]=>
+    string(12) "cuo huo zhua"
+  }
+  ["chars"]=>
+  array(3) {
+    [0]=>
+    string(4) "zhua"
+    [1]=>
+    string(3) "cuo"
+    [2]=>
+    string(3) "huo"
+  }
+}
+```
