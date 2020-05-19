@@ -323,10 +323,15 @@ class SmartPinyinBase
 				$aCapitals = [];
 				foreach($aSplits as $k => $aSplit){
 					$aSplitCapital = substr($aSplit, 0, 1);
-					preg_match($punctuationSearch, $aSplit, $aSplitPunctuations);
-					$aSplitPunctuations = isset($aSplitPunctuations[0])? $aSplitPunctuations[0] : '';
+					if(empty($this->_punctuations)){
+					    $aCapitals[] = $aSplitCapital;
+					}else{
+					    preg_match($punctuationSearch, $aSplit, $aSplitPunctuations);
+					    $aSplitPunctuations = isset($aSplitPunctuations[0])? $aSplitPunctuations[0] : '';
+					    
+					    $aCapitals[] = $aSplitCapital . $aSplitPunctuations;
+					}
 					
-					$aCapitals[] = $aSplitCapital . $aSplitPunctuations;
 				}
 				$this->_assoc_capital[] = implode($aGlue, $aCapitals);
 			}
@@ -413,32 +418,35 @@ class SmartPinyinBase
 			}
 		}
 		
-		
-		$punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
-		$value_splited_k = 0;
-		foreach($valueSplited as $v){
-			if(in_array($v, $this->_punctuations)){
-				$value_splited_k_prev = $value_splited_k - 1;
-				$value_splited_k_prev = $value_splited_k_prev < 0? 0 : $value_splited_k_prev;
-				$this->_value_splited[$value_splited_k_prev] = $this->_value_splited[$value_splited_k_prev] . $v;
-				$value_splited_k++;
-			}else{
-				preg_match_all($punctuationSearch, $v, $vPunctuations);
-				$vSplits = array_filter(preg_split($punctuationSearch, $v));
-				$vPunctuations_k = 0;
-				foreach($vSplits as $k => $vSplit){
-					if(isset($vPunctuations[0][$k])){
-						$vSplit = $vSplit . $vPunctuations[0][$k];
-					}
-					
-					$this->_value_splited[$value_splited_k] = $vSplit;
-					$value_splited_k++;
-				}
-			}
+		if(empty($this->_punctuations)){
+		    $this->_value_splited = $valueSplited;
+		}else{
+		    $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
+		    $value_splited_k = 0;
+		    foreach($valueSplited as $v){
+		        if(in_array($v, $this->_punctuations)){
+		            $value_splited_k_prev = $value_splited_k - 1;
+		            $value_splited_k_prev = $value_splited_k_prev < 0? 0 : $value_splited_k_prev;
+		            $this->_value_splited[$value_splited_k_prev] = $this->_value_splited[$value_splited_k_prev] . $v;
+		            $value_splited_k++;
+		        }else{
+		            preg_match_all($punctuationSearch, $v, $vPunctuations);
+		            $vSplits = array_filter(preg_split($punctuationSearch, $v));
+		            $vPunctuations_k = 0;
+		            foreach($vSplits as $k => $vSplit){
+		                if(isset($vPunctuations[0][$k])){
+		                    $vSplit = $vSplit . $vPunctuations[0][$k];
+		                }
+		                
+		                $this->_value_splited[$value_splited_k] = $vSplit;
+		                $value_splited_k++;
+		            }
+		        }
+		    }
 		}
 			
 		$this->_value_splited = array_filter($this->_value_splited);
-		
+
 		$this->pushChar($this->_value_splited);
 	}
 	
@@ -465,9 +473,15 @@ class SmartPinyinBase
 			$charPinyin = array();
 			foreach($this->_value_splited as $k => $char){
 				$k_char = $k . $char;
-				preg_match($punctuationSearch, $char, $charPunctuations);
-				$charPunctuations = isset($charPunctuations[0])? $charPunctuations[0] : '';
-				$charWithoutPunctuations = str_replace($charPunctuations, '', $char);
+				if(empty($this->_punctuations)){
+				    $charWithoutPunctuations = $char;
+				    $charPunctuations = '';
+				}else{
+    				preg_match($punctuationSearch, $char, $charPunctuations);
+    				$charPunctuations = isset($charPunctuations[0])? $charPunctuations[0] : '';
+    				$charWithoutPunctuations = str_replace($charPunctuations, '', $char);
+				}
+				
 				$charPinyin[$k_char] = [];
 				if(!empty($char)){
 					$pinyins = [];

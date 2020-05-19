@@ -4,9 +4,9 @@ require_once 'SmartPinyin.php';
 use SmartPinyin\SmartPinyin as SmartPinyin;
 
 $smartPinyin = new SmartPinyin();
-// $smartPinyin->setFilter([',']);
+$smartPinyin->setFilter([',']);
 // $smartPinyin->setGlues([' ']);
-$smartPinyin->setPunctuations([',', '.']);
+// $smartPinyin->setPunctuations([',', '.']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 // $smartPinyin->setSingleYmCharSplit(true);
@@ -32,7 +32,7 @@ $smartPinyin->addEntireWholePinyins([
 // $assoc = $smartPinyin->fetchAssoc();
 // $chars = $smartPinyin->fetchChars();
 // var_dump($assoc, $chars);
-$batchRet = $smartPinyin->batchSetDataAssocAll('qiaqiaoqimian nuonou');
+$batchRet = $smartPinyin->batchSetDataAssocAll('ni, hao, ma,ya');
 var_dump($batchRet);
 
 // $assocCapital = $smartPinyin->fetchCapitalAssoc();
