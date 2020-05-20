@@ -195,6 +195,7 @@ class SmartPinyinBase
 	    }
 	    
 	    $this->_value = preg_replace('/ +/', ' ', $this->_value);
+	    $this->_value = trim($this->_value);
 	}
 	
 	public function setGlues($glues = [' '])
