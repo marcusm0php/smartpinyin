@@ -74,9 +74,10 @@ class SmartPinyinBase
 	
 	const PINYIN_YUNMU_SPLIT = '`';
 	
+	protected $_value_ori = '';
 	protected $_value = '';
 	protected $_value_splited = [];
-	protected $_filter = [];
+	protected $_filters_replacement = [];
 	protected $_glues = [];
 	protected $_punctuations = [];
 	protected $_dynamic_glue = false;
@@ -121,7 +122,7 @@ class SmartPinyinBase
 	
 	public function defaultSettings()
 	{
-		$this->setFilter([]);
+		$this->setFiltersReplacement([]);
 		$this->setGlues([' ']);
 		$this->setPunctuations([]);
 		$this->setSupplementScope([]);
@@ -155,6 +156,7 @@ class SmartPinyinBase
 		    $value = preg_replace('/ +([\\' . implode('\\', $this->_punctuations) . '])/', '\1', $value);
         }
 		
+        $this->_value_ori = iconv('', 'utf-8', trim($value));
 		$this->_value = iconv('', 'utf-8', trim($value));
 		$this->filterData();
 		
@@ -166,7 +168,7 @@ class SmartPinyinBase
 		$this->setData($value);
 		$this->assocSelf();
 		$this->assocPinyin();
-		$this->assocPinyinKeepCn();
+// 		$this->assocPinyinKeepCn();
 		
 		return $this->fetchAll($fetchAssoc, $fetchChars, $fetchAssocCapital, $fetchCharsCapital);
 	}
@@ -176,14 +178,23 @@ class SmartPinyinBase
 		return $this->_value;
 	}
 	
-	public function setFilter($filter = [])
+	/**
+	 * 
+	 * @param array $filter
+	 * key--->values which mean each replacement to several filter contents
+	 */
+	public function setFiltersReplacement($filters_replacement = [])
 	{
-		$this->_filter = $filter;
+	    $this->_filters_replacement = $filters_replacement;
 	}
 	
 	public function filterData()
 	{
-		$this->_value = str_replace($this->_filter, '', $this->_value);
+	    foreach($this->_filters_replacement as $replacement => $filters){
+	        $this->_value = str_replace($filters, $replacement, $this->_value);
+	    }
+	    
+	    $this->_value = preg_replace('/ +/', ' ', $this->_value);
 	}
 	
 	public function setGlues($glues = [' '])
@@ -395,10 +406,14 @@ class SmartPinyinBase
 		}
 	}
 	
-	public function valueSplitCnPinyin()
+	public function valueSplitCnPinyin($tolowercase = true)
 	{
 		$this->_value_splited = $valueSplited = [];
-		$valueArr = preg_split('/(?<!^)(?!$)/u', $this->_value);
+		if($tolowercase){
+            $valueArr = preg_split('/(?<!^)(?!$)/u', strtolower($this->_value));
+		}else{
+		    $valueArr = preg_split('/(?<!^)(?!$)/u', $this->_value);
+		}
 		
 		$i = 0;
 		$ch_en_changed = true;
@@ -458,22 +473,29 @@ class SmartPinyinBase
 		$this->pushChar($this->_value_splited);
 	}
 	
-	public function assocSelf()
+	public function assocSelf($tolowercase = true)
 	{
-		$value = $this->_value;
+	    $this->pushAssoc($this->_value_ori);
+	    if($tolowercase){
+	        $this->pushAssoc(strtolower($this->_value_ori));
+	    }
+	    
 		$this->pushAssoc($this->_value);
-		$this->filterData();
-		if($value != $this->_value){
-			$this->pushAssoc($this->_value);
+		if($tolowercase){
+		    $this->pushAssoc(strtolower($this->_value));
 		}
 	}
 	
-	public function assocPinyinKeepCn()
+	public function assocPinyinKeepCn($tolowercase = true)
 	{
 	    $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
 	    foreach($this->_glues as $glue){
 	        $charPinyin = array();
 	        foreach($this->_value_splited as $k => $char){
+	            if($tolowercase){
+	                $k = strtolower($k);
+	                $char = strtolower($char);
+	            }
 	            $k_char = $k . $char;
 	            if(empty($this->_punctuations)){
 	                $charWithoutPunctuations = $char;
@@ -534,12 +556,16 @@ class SmartPinyinBase
 	 *  <b>Options</b>: SmartPinyin::PINYIN_TONE_NONE | SmartPinyin::PINYIN_TONE_WITH | SmartPinyin::PINYIN_TONE_ALL<br />
 	 *  Warning: Only SmartPinyin::PINYIN_TONE_NONE is supported on current version<br />
 	 */
-	public function assocPinyin($pinyinTone = self::PINYIN_TONE_NONE)
+	public function assocPinyin($pinyinTone = self::PINYIN_TONE_NONE, $tolowercase = true)
 	{
 		$punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
 		foreach($this->_glues as $glue){
 			$charPinyin = array();
 			foreach($this->_value_splited as $k => $char){
+			    if($tolowercase){
+			        $k = strtolower($k);
+			        $char = strtolower($char);
+			    }
 				$k_char = $k . $char;
 				if(empty($this->_punctuations)){
 				    $charWithoutPunctuations = $char;
@@ -955,7 +981,6 @@ class SmartPinyinBase
 	
 	protected function _pinyinAnalyzer($str, $deep = 0)
 	{
-		$str = strtolower($str);
 		$pinyins = [
 			'chars' => [],
 			'pinyins' => []
