@@ -151,6 +151,10 @@ class SmartPinyinBase
 			$this->clearFetchs();
 		}
 		
+		if(!empty($this->_punctuations)){
+		    $value = preg_replace('/ +([\\' . implode('\\', $this->_punctuations) . '])/', '\1', $value);
+        }
+		
 		$this->_value = iconv('', 'utf-8', trim($value));
 		$this->filterData();
 		
@@ -162,6 +166,7 @@ class SmartPinyinBase
 		$this->setData($value);
 		$this->assocSelf();
 		$this->assocPinyin();
+		$this->assocPinyinKeepCn();
 		
 		return $this->fetchAll($fetchAssoc, $fetchChars, $fetchAssocCapital, $fetchCharsCapital);
 	}
@@ -345,45 +350,51 @@ class SmartPinyinBase
 		}
 		
 		foreach($char as $c){
-			$glue = isset($this->_glues[0])? $this->_glues[0] : ' ';
-			foreach(explode($glue, $c) as $cc){
-				foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
-					$cccFilterPunctuations = str_replace($this->_punctuations, '', $ccc);
-					$cccCapital = substr($ccc, 0, 1);
-					if(!in_array($cccFilterPunctuations, $this->_chars)){
-						if(self::IsAllChinese($cccFilterPunctuations)){
-							if($this->_collect_cn_char){
-								$this->_chars[] = $cccFilterPunctuations;
-								if(!in_array($cccCapital, $this->_chars_capital)){
-									$this->_chars_capital[] = $cccCapital;
-								}
-							}
-						}else{
-							if($this->_collect_not_pinyin_abc_char){
-								$this->_chars[] = $cccFilterPunctuations;
-								if(!in_array($cccCapital, $this->_chars_capital)){
-									$this->_chars_capital[] = $cccCapital;
-								}
-							}else{
-								foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
-									foreach(WHOLE_SM_YMS as $smym){
-										preg_match('/^('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
-										if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
-											$this->_chars[] = $cccFilterPunctuations;
-											if(!in_array($cccCapital, $this->_chars_capital)){
-												$this->_chars_capital[] = $cccCapital;
-											}
-											goto __GOTO_NEXT_CC;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				__GOTO_NEXT_CC:
-			}
+		    if(self::IsAllChinese($c)){
+		        if(!in_array($c, $this->_chars)){
+		          $this->_chars[] = $c;
+		        }
+		    }else{
+		        $glue = isset($this->_glues[0])? $this->_glues[0] : ' ';
+		        foreach(explode($glue, $c) as $cc){
+		            foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
+		                $cccFilterPunctuations = str_replace($this->_punctuations, '', $ccc);
+		                $cccCapital = substr($ccc, 0, 1);
+		                if(!in_array($cccFilterPunctuations, $this->_chars)){
+		                    if(self::IsAllChinese($cccFilterPunctuations)){
+		                        if($this->_collect_cn_char){
+		                            $this->_chars[] = $cccFilterPunctuations;
+		                            if(!in_array($cccCapital, $this->_chars_capital)){
+		                                $this->_chars_capital[] = $cccCapital;
+		                            }
+		                        }
+		                    }else{
+		                        if($this->_collect_not_pinyin_abc_char){
+		                            $this->_chars[] = $cccFilterPunctuations;
+		                            if(!in_array($cccCapital, $this->_chars_capital)){
+		                                $this->_chars_capital[] = $cccCapital;
+		                            }
+		                        }else{
+		                            foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
+		                                foreach(WHOLE_SM_YMS as $smym){
+		                                    preg_match('/^('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
+		                                    if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
+		                                        $this->_chars[] = $cccFilterPunctuations;
+		                                        if(!in_array($cccCapital, $this->_chars_capital)){
+		                                            $this->_chars_capital[] = $cccCapital;
+		                                        }
+		                                        goto __GOTO_NEXT_CC;
+		                                    }
+		                                }
+		                            }
+		                        }
+		                    }
+		                }
+		            }
+		            
+		            __GOTO_NEXT_CC:
+		        }
+		    }
 		}
 	}
 	
@@ -460,6 +471,67 @@ class SmartPinyinBase
 		}
 	}
 	
+	public function assocPinyinKeepCn()
+	{
+	    $punctuationSearch = '/[\\'. implode('\\', $this->_punctuations) .']+/';
+	    foreach($this->_glues as $glue){
+	        $charPinyin = array();
+	        foreach($this->_value_splited as $k => $char){
+	            $k_char = $k . $char;
+	            if(empty($this->_punctuations)){
+	                $charWithoutPunctuations = $char;
+	                $charPunctuations = '';
+	            }else{
+	                preg_match($punctuationSearch, $char, $charPunctuations);
+	                $charPunctuations = isset($charPunctuations[0])? $charPunctuations[0] : '';
+	                $charWithoutPunctuations = str_replace($charPunctuations, '', $char);
+	            }
+	            
+	            $charPinyin[$k_char] = [];
+	            if(!empty($char)){
+	                if(self::IsAllChinese($charWithoutPunctuations)){
+	                    $this->pushChar($charWithoutPunctuations);
+	                    $charPinyin[$k_char] = [$char];
+	                }else{
+	                    
+	                    $this->pushChar($charWithoutPunctuations);
+                        $pinyinAnalyzers = self::PinyinAnalyzer($char, $this->_punctuations, $this->_entire_whole_pinyins, $this->_split_not_whole_pinyin);
+                        
+                        $this->pushChar($pinyinAnalyzers['chars']);
+                        foreach($pinyinAnalyzers['pinyins'] as $analyzedPinyin){
+                            $singleCombo = self::SinglePinYinComb($analyzedPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+                            $charPinyin[$k_char] = array_merge($charPinyin[$k_char], $singleCombo);
+                        }
+	                }
+	            }
+	            
+	            if(empty($charPinyin[$k_char])){
+	                $charPinyin[$k_char] = array($char);
+	            }
+	        }
+	        
+	        foreach($charPinyin as $char => $pinyin){
+	            $charPinyin[$char] = array_filter(array_unique($pinyin));
+	            if(empty($charPinyin[$char])){
+	                $charPinyin[$char] = array($char);
+	            }
+	        }
+	        
+	        $combs = self::CharPinYinsComb($charPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+	        
+	        if(!empty($this->_punctuations)){
+	            $punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
+	            foreach($combs as $k => $comb){
+	                $combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
+	            }
+	        }
+	        
+	        $combs = array_unique($combs);
+	        
+	        $this->pushAssoc($combs);
+	    }
+	}
+	
 	/**
 	 * 
 	 * @param String $pinyinTone <br />
@@ -483,14 +555,14 @@ class SmartPinyinBase
 				}
 				
 				$charPinyin[$k_char] = [];
-				if(!empty($char)){
+				if(!empty($charWithoutPunctuations)){
 					$pinyins = [];
 					if($pinyinTone == self::PINYIN_TONE_ALL){
-						$pinyins = array_merge(static::$_CnConvert->toPinyin($char, 0), static::$_CnConvert->toPinyin($char, 1));
+					    $pinyins = array_merge(static::$_CnConvert->toPinyin($char, 0), static::$_CnConvert->toPinyin($char, 1));
 					}elseif($pinyinTone == self::PINYIN_TONE_NONE){
-						$pinyins = static::$_CnConvert->toPinyin($char, 0);
+					    $pinyins = static::$_CnConvert->toPinyin($char, 0);
 					}elseif($pinyinTone == self::PINYIN_TONE_WITH){
-						$pinyins = static::$_CnConvert->toPinyin($char, 1);
+					    $pinyins = static::$_CnConvert->toPinyin($char, 1);
 					}
 					
 					$this->pushChar($pinyins);

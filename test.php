@@ -7,7 +7,7 @@ $smartPinyin = new SmartPinyin();
 // $smartPinyin->setFilter([',']);
 // $smartPinyin->setGlues([' ']);
 $smartPinyin->setPunctuations([',']);
-// $smartPinyin->setDynamicGlue(true);
+$smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 // $smartPinyin->setSingleYmCharSplit(true);
 // $smartPinyin->setCollectCnChar(true);
@@ -27,15 +27,25 @@ $smartPinyin->addEntireWholePinyins([
 //     'xie', 'qie', 'lie', 'jie', 'pie', 'die', 'bie', 'nie', 'mie'
 ]);
 
-// $smartPinyin->setData('08 Aug 1950 mao');
+// $smartPinyin->setData('你,aklsdj, hanwo, 姐,哈好 ,jiayou');
 // $smartPinyin->assocSelf();
 // $smartPinyin->assocPinyin();
+// $smartPinyin->assocPinyinKeepCn();
 // $assoc = $smartPinyin->fetchAssoc();
 // $chars = $smartPinyin->fetchChars();
 // var_dump($assoc, $chars);
-$batchRet = $smartPinyin->batchSetDataAssocAll('你好hao');
-var_dump($batchRet);
-
 // $assocCapital = $smartPinyin->fetchCapitalAssoc();
 // $charsCapital = $smartPinyin->fetchCapitalChars();
 // var_dump($assocCapital, $charsCapital);
+
+
+$batchRet = $smartPinyin->batchSetDataAssocAll('你,aklsdj, hanwo, 姐,哈好 ,jiayou');
+var_dump($batchRet);
+
+
+
+
+
+
+
+
