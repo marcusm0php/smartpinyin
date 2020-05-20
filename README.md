@@ -149,15 +149,15 @@ array(4) {
 }
 ```
 分词策略：
-1. 按照空格/中文字将原文拆分为元词，'woshi smart pinyin'被分为三部分woshi，smart，pinyin
-2. 每一个元词将被进一步进行识别分析
-3. 只有元词整体能被完全分析为拼音的情况下，元词被分词。woshi被分词为wo和shi，pinyin被分词为pin和yin；
-5. 元词不是“全拼音”则不会被进一步分词。如smart中，虽然按照拼音结构，能够解析出ma，但是考虑到英文单词中，含有大量符合声母韵母的结构，如果进一步解析，将会过度
+1. 按照空格/中文字将原文拆分为元词，'woshi smart pinyin'被分为三部分woshi，smart，pinyin<br />
+2. 每一个元词将被进一步进行识别分析<br />
+3. 只有元词整体能被完全分析为拼音的情况下，元词被分词。woshi被分词为wo和shi，pinyin被分词为pin和yin；<br />
+4. 元词不是“全拼音”则不会被进一步分词。如smart中，虽然按照拼音结构，能够解析出ma，但是考虑到英文单词中，含有大量符合声母韵母的结构，如果进一步解析，将会过度
 
 assoc联想词关联方法
 -----
 assocSelf(): 原文push入assoc数组中<br />
-assocPinyin(): 将原文根据设置转换为拼音后push入assoc及chars数组中,所有中文会被转为拼音
+assocPinyin(): 将原文根据设置转换为拼音后push入assoc及chars数组中,所有中文会被转为拼音<br />
 assocPinyinKeepCn(): 将原文根据设置转换为拼音后push入assoc及chars数组中,所有中文保留，chars中包含中文
 
 
