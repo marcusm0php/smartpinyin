@@ -1,12 +1,12 @@
 <?php 
-require_once 'SmartPinyin.php';
+require_once 'src/SmartPinyin.php';
 
 use SmartPinyin\SmartPinyin as SmartPinyin;
 
 $smartPinyin = new SmartPinyin();
-$smartPinyin->setFilter([',']);
+// $smartPinyin->setFilter([',']);
 // $smartPinyin->setGlues([' ']);
-// $smartPinyin->setPunctuations([',', '.']);
+$smartPinyin->setPunctuations([',']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 // $smartPinyin->setSingleYmCharSplit(true);
@@ -14,7 +14,8 @@ $smartPinyin->setFilter([',']);
 // $smartPinyin->setCollectNotPinyinAbcChar(true);
 // $smartPinyin->setSplitNotWholePinyin(true);
 $smartPinyin->addEntireWholePinyins([
-    'ao', 'iao', 'ou', 'ie', 'hu', 'ia', 'iang', 'uo', 'ua', 
+//     'ao', 'ea'
+//     'ao', 'iao', 'ou', 'ie', 'hu', 'ia', 'iang', 'uo', 'ua', 
 //     'mao', 'lao', 'bao', 'kao', 'zao', 'cao', 'yao', 'pao', 'nao', 'tao', 'hao', 'gao', 'dao', 'sao',  
 //     'miao', 'niao', 'piao', 'qiao', 'biao', 'xiao', 'liao', 'jiao', 'tiao', 
 //     'mian', 'nian', 'pian', 'qian', 'bian', 'xian', 'lian', 'jian', 'tian', 
@@ -32,7 +33,7 @@ $smartPinyin->addEntireWholePinyins([
 // $assoc = $smartPinyin->fetchAssoc();
 // $chars = $smartPinyin->fetchChars();
 // var_dump($assoc, $chars);
-$batchRet = $smartPinyin->batchSetDataAssocAll('ni, hao, ma,ya');
+$batchRet = $smartPinyin->batchSetDataAssocAll('你好hao');
 var_dump($batchRet);
 
 // $assocCapital = $smartPinyin->fetchCapitalAssoc();

@@ -1,5 +1,5 @@
 {  
-    "name":"SmartPinyin",  
+    "name":"smartpinyin",  
     "description":"smart pinyin analyzer",  
     "authors":[  
         {  
@@ -9,5 +9,8 @@
     ],  
     "minimum-stability":"dev",  
     "require":{},  
-    "autoload":{} 
+    
+    "autoload": {
+        "psr-4": {"SmartPinyin\\": "src/"}
+    },
 }

@@ -111,8 +111,8 @@ class SmartPinyinBase
 	
 	public function init()
 	{
-		self::$CFG_LANG_PINYIN_DUOYINZI = include 'dict/lang.pinyin.duoyinzi.cfg.php';
-		self::$CFG_LANG_PINYIN_NAME = include 'dict/lang.pinyin.name.cfg.php';
+	    self::$CFG_LANG_PINYIN_DUOYINZI = include dirname(dirname(__FILE__)) . '/dict/lang.pinyin.duoyinzi.cfg.php';
+	    self::$CFG_LANG_PINYIN_NAME = include dirname(dirname(__FILE__)) . '/dict/lang.pinyin.name.cfg.php';
 		
 		$this->setCnConvert();
 		
@@ -593,7 +593,7 @@ class SmartPinyinBase
 	 * @param Array $charPinyins
 	 * @param string $glues
 	 * @param string $dynamicGlue
-	 *	  能改使拼音按照不同有/无glue的排列组合生成
+	 *	  能使拼音按照不同有/无glue的排列组合生成
 	 *	  假如$glues=['', ' ']
 	 *	  当$dynamicGlue=true,  那么针对第二个' '， 刘慈欣将被排列组合为:  1.liucixin  2.liu cixin  3.liuci xin  4.liu ci xin
 	 *	  当$dynamicGlue=false, 刘慈欣将被排列组合为:  1.liucixin  2.liu ci xin
