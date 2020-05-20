@@ -364,9 +364,6 @@ class SmartPinyinBase
 		                    if(self::IsAllChinese($cccFilterPunctuations)){
 		                        if($this->_collect_cn_char){
 		                            $this->_chars[] = $cccFilterPunctuations;
-		                            if(!in_array($cccCapital, $this->_chars_capital)){
-		                                $this->_chars_capital[] = $cccCapital;
-		                            }
 		                        }
 		                    }else{
 		                        if($this->_collect_not_pinyin_abc_char){
@@ -493,13 +490,12 @@ class SmartPinyinBase
 	                    $this->pushChar($charWithoutPunctuations);
 	                    $charPinyin[$k_char] = [$char];
 	                }else{
-	                    
 	                    $this->pushChar($charWithoutPunctuations);
-                        $pinyinAnalyzers = self::PinyinAnalyzer($char, $this->_punctuations, $this->_entire_whole_pinyins, $this->_split_not_whole_pinyin);
+                        $pinyinAnalyzers = $this->_pinyinAnalyzer($char);
                         
                         $this->pushChar($pinyinAnalyzers['chars']);
                         foreach($pinyinAnalyzers['pinyins'] as $analyzedPinyin){
-                            $singleCombo = self::SinglePinYinComb($analyzedPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+                            $singleCombo = $this->_singlePinYinComb($analyzedPinyin, $glue);
                             $charPinyin[$k_char] = array_merge($charPinyin[$k_char], $singleCombo);
                         }
 	                }
@@ -517,7 +513,7 @@ class SmartPinyinBase
 	            }
 	        }
 	        
-	        $combs = self::CharPinYinsComb($charPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+	        $combs = $this->_charPinYinsComb($charPinyin, $glue);
 	        
 	        if(!empty($this->_punctuations)){
 	            $punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
@@ -570,11 +566,11 @@ class SmartPinyinBase
 						if(self::IsAllChinese($charWithoutPunctuations)){
 							$charPinyin[$k_char][] = str_replace($charPunctuations, '', $pinyin) . $charPunctuations;
 						}else{
-							$pinyinAnalyzers = self::PinyinAnalyzer($pinyin, $this->_punctuations, $this->_entire_whole_pinyins, $this->_split_not_whole_pinyin);
+							$pinyinAnalyzers = $this->_pinyinAnalyzer($pinyin);
 							
 							$this->pushChar($pinyinAnalyzers['chars']);
 							foreach($pinyinAnalyzers['pinyins'] as $analyzedPinyin){
-								$singleCombo = self::SinglePinYinComb($analyzedPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+								$singleCombo = $this->_singlePinYinComb($analyzedPinyin, $glue);
 								$charPinyin[$k_char] = array_merge($charPinyin[$k_char], $singleCombo);
 							}
 						}
@@ -645,7 +641,7 @@ class SmartPinyinBase
 				}
 			}
 			
-			$combs = self::CharPinYinsComb($charPinyin, $glue, $this->_dynamic_glue, $this->_single_ymchar_split, $this->_punctuations);
+			$combs = $this->_charPinYinsComb($charPinyin, $glue);
 			
 			if(!empty($this->_punctuations)){
 				$punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
@@ -671,7 +667,7 @@ class SmartPinyinBase
 	 *	  当$dynamicGlue=false, 刘慈欣将被排列组合为:  1.liucixin  2.liu ci xin
 	 * @return string[]|unknown[]
 	 */
-	public static function CharPinYinsComb($charPinyins, $glues = ' ', $dynamicGlue = false, $singleYmCharSplit = true, $punctuations = [], $deep = 0)
+	protected function _charPinYinsComb($charPinyins, $glues = ' ', $deep = 0)
 	{
 		$ret = [];
 		
@@ -691,7 +687,7 @@ class SmartPinyinBase
 			$glue = $glues;
 			
 			foreach($firstCharPinyins as $pinyin){
-				if($singleYmCharSplit && in_array($pinyin, self::$PINYIN_YUNMU)){
+				if($this->_single_ymchar_split && in_array($pinyin, self::$PINYIN_YUNMU)){
 					// 全词首字不加韵母分词符
 					if($deep > 0){
 						$pinyin = self::PINYIN_YUNMU_SPLIT . $pinyin;
@@ -704,12 +700,12 @@ class SmartPinyinBase
 						foreach($remainPinyins as $remainPinyin){
 							// 最后一个字如果是全韵母，特殊处理韵母分词符号
 							$ret[] = $pinyin . $glue . $remainPinyin;
-							if($singleYmCharSplit && in_array($remainPinyin, self::$PINYIN_YUNMU)){
+							if($this->_single_ymchar_split && in_array($remainPinyin, self::$PINYIN_YUNMU)){
 								$ret[] = $pinyin . $glue . self::PINYIN_YUNMU_SPLIT . $remainPinyin;
 							}
 							
-							if($dynamicGlue){
-								if($singleYmCharSplit && in_array($remainPinyin, self::$PINYIN_YUNMU)){
+							if($this->_dynamic_glue){
+							    if($this->_single_ymchar_split && in_array($remainPinyin, self::$PINYIN_YUNMU)){
 									$remainPinyinWithYunmuSplit = self::PINYIN_YUNMU_SPLIT . $remainPinyin;
 									$ret[] = $pinyin . $remainPinyinWithYunmuSplit;
 									$ret[] = $pinyin . $remainPinyin;
@@ -720,9 +716,9 @@ class SmartPinyinBase
 						}
 					}
 				}else{
-					foreach(self::CharPinYinsComb($remainCharPinyins, $glues, $dynamicGlue, $singleYmCharSplit, $punctuations, $deep+1) as $remainPinyin){
+					foreach($this->_charPinYinsComb($remainCharPinyins, $glues, $deep+1) as $remainPinyin){
 						$ret[] = $pinyin . $glue . $remainPinyin;
-						if($dynamicGlue){
+						if($this->_dynamic_glue){
 							$ret[] = $pinyin . $remainPinyin;
 						}
 					}
@@ -730,7 +726,7 @@ class SmartPinyinBase
 			}
 		}elseif(is_array($glues)){
 			foreach($glues as $glue){
-				foreach(self::CharPinYinsComb($charPinyins, $glue, $dynamicGlue, $singleYmCharSplit, $punctuations, $deep) as $remainPinyin){
+				foreach($this->_charPinYinsComb($charPinyins, $glue, $deep) as $remainPinyin){
 					$ret[] = $remainPinyin;
 				}
 			}
@@ -760,14 +756,14 @@ class SmartPinyinBase
 	 * @param number $deep
 	 * @return mixed|string[]|string[][]|unknown[][]
 	 */
-	public static function SinglePinYinComb($singlePinyin, $glues = ' ', $dynamicGlue = false, $singleYmCharSplit = true, $punctuations = [], $deep = 0)
+	protected function _singlePinYinComb($singlePinyin, $glues = ' ', $deep = 0)
 	{
 		$ret = [];
 		
 		if($deep == 0){
 			$singlePinyinPunctuation = '';
 			if(!empty($punctuations)){
-				$punctuationSearch = '([\\'. implode('\\', $punctuations) .']+)';
+				$punctuationSearch = '([\\'. implode('\\', $this->_punctuations) .']+)';
 				
 				preg_match($punctuationSearch, $singlePinyin, $singlePinyinPunctuation);
 				if(isset($singlePinyinPunctuation[0])){
@@ -784,7 +780,7 @@ class SmartPinyinBase
 		$firstSinglePinyin = array_shift($remainSinglePinyin);
 		$firstSinglePinyinYmSplited = $firstSinglePinyin;		
 		
-		if($singleYmCharSplit && $deep > 0 && in_array($firstSinglePinyin, self::$PINYIN_YUNMU)){
+		if($this->_single_ymchar_split && $deep > 0 && in_array($firstSinglePinyin, self::$PINYIN_YUNMU)){
 			// 全词首字不加韵母分词符
 			$firstSinglePinyinYmSplited = self::PINYIN_YUNMU_SPLIT . $firstSinglePinyin;
 		}
@@ -798,13 +794,13 @@ class SmartPinyinBase
 					$lastPinyin = array_shift($remainSinglePinyin);
 					$ret[] = $firstSinglePinyin . $glue . $lastPinyin;
 					$ret[] = $firstSinglePinyinYmSplited . $glue . $lastPinyin;
-					if($singleYmCharSplit && in_array($lastPinyin, self::$PINYIN_YUNMU)){
+					if($this->_single_ymchar_split && in_array($lastPinyin, self::$PINYIN_YUNMU)){
 						$ret[] = $firstSinglePinyin . $glue . self::PINYIN_YUNMU_SPLIT . $lastPinyin;
 						$ret[] = $firstSinglePinyinYmSplited . $glue . self::PINYIN_YUNMU_SPLIT . $lastPinyin;
 					}
 					
-					if($dynamicGlue){
-						if($singleYmCharSplit && in_array($lastPinyin, self::$PINYIN_YUNMU)){
+					if($this->_dynamic_glue){
+						if($this->_single_ymchar_split && in_array($lastPinyin, self::$PINYIN_YUNMU)){
 							$lastPinyinWithYunmuSplit = self::PINYIN_YUNMU_SPLIT . $lastPinyin;
 							$ret[] = $firstSinglePinyin . $lastPinyinWithYunmuSplit;
 							$ret[] = $firstSinglePinyin . $lastPinyin;
@@ -816,10 +812,10 @@ class SmartPinyinBase
 						}
 					}
 				}else{
-					foreach(self::SinglePinYinComb(implode(' ', $remainSinglePinyin), $glues, $dynamicGlue, $singleYmCharSplit, $punctuations, $deep+1) as $remainPinyin){
+					foreach($this->_singlePinYinComb(implode(' ', $remainSinglePinyin), $glues, $deep+1) as $remainPinyin){
 						$ret[] = $firstSinglePinyin . $glue . $remainPinyin;
 						$ret[] = $firstSinglePinyinYmSplited . $glue . $remainPinyin;
-						if($dynamicGlue){
+						if($this->_dynamic_glue){
 							$ret[] = $firstSinglePinyin . $remainPinyin;
 							$ret[] = $firstSinglePinyinYmSplited . $remainPinyin;
 						}
@@ -827,7 +823,7 @@ class SmartPinyinBase
 				}
 			}elseif(is_array($glues)){
 				foreach($glues as $glue){
-					foreach(self::SinglePinYinComb($singlePinyin, $glue, $dynamicGlue, $singleYmCharSplit, $punctuations, $deep) as $remainPinyin){
+					foreach($this->_singlePinYinComb($singlePinyin, $glue, $deep) as $remainPinyin){
 						$ret[] = $remainPinyin;
 					}
 				}
@@ -854,8 +850,6 @@ class SmartPinyinBase
 		return $ret;
 	}
 	
-	
-	
 	public static function N($arr)
 	{
 		$results = array();
@@ -873,7 +867,7 @@ class SmartPinyinBase
 		return $results;
 	}
 	
-	public static function SplitSinglePinyin($str, $entireWholePinyins = [], $splitNotWholePinyin = false, $seq = 0){
+	protected function _splitSinglePinyin($str, $seq = 0){
 		$str = trim($str);
 		$results = array();
 		
@@ -881,7 +875,7 @@ class SmartPinyinBase
 		
 		foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
 			foreach(WHOLE_SM_YMS as $kk => $smym){
-				if($splitNotWholePinyin){
+				if($this->_split_not_whole_pinyin){
 				    preg_match('/('.$ym.'|(?:'.$smym.'))/', $str, $match);
 				    if(!empty($match[0])){
     				    $matchRemain = substr($str, strlen($match[0]));
@@ -922,7 +916,7 @@ class SmartPinyinBase
 
 			$strRemain = substr($str, strlen($charMatch));
 			if(!empty($strRemain)){
-				$nextCharMatches = self::SplitSinglePinyin($strRemain, $entireWholePinyins, $splitNotWholePinyin, $seq+1);
+				$nextCharMatches = $this->_splitSinglePinyin($strRemain, $seq+1);
 				$results[$charMatch] = $nextCharMatches;
 			}
 		}
@@ -930,7 +924,7 @@ class SmartPinyinBase
 		if($seq == 0){
 			$results = self::N($results);
 			
-			foreach($entireWholePinyins as $entireWholePinyin){
+			foreach($this->_entire_whole_pinyins as $entireWholePinyin){
 			    $tmp = [];
 			    for($i = 0; $i < strlen($entireWholePinyin); $i++){
 			        $c = $entireWholePinyin[$i];
@@ -959,7 +953,7 @@ class SmartPinyinBase
 		return $results;
 	}
 	
-	public static function PinyinAnalyzer($str, $punctuations = [], $entireWholePinyins = [], $splitNotWholePinyin = false, $deep = 0)
+	protected function _pinyinAnalyzer($str, $deep = 0)
 	{
 		$str = strtolower($str);
 		$pinyins = [
@@ -970,8 +964,8 @@ class SmartPinyinBase
 		
 		if($deep == 0){
 			$strPunctuations = '';
-			if(!empty($punctuations)){
-				$punctuationSearch = '([\\'. implode('\\', $punctuations) .']+)';
+			if(!empty($this->_punctuations)){
+			    $punctuationSearch = '([\\'. implode('\\', $this->_punctuations) .']+)';
 				preg_match($punctuationSearch, $str, $strPunctuations);
 				$strPunctuations = isset($strPunctuations[0])? $strPunctuations[0] : '';
 				
@@ -982,7 +976,7 @@ class SmartPinyinBase
 		$splitBySpace = explode(' ', $str);
 		if(count($splitBySpace) > 1){
 			foreach($splitBySpace as $splitStr){
-				$recrRet = self::PinyinAnalyzer($splitStr, $punctuations, $entireWholePinyins, $splitNotWholePinyin, $deep+1);
+				$recrRet = $this->_pinyinAnalyzer($splitStr, $deep+1);
 				
 				$pinyins['chars'] = array_merge($pinyins['chars'], $recrRet['chars']);
 				if(!empty($recrRet['pinyins'])){
@@ -1005,7 +999,7 @@ class SmartPinyinBase
 				'pinyins' => [$str]
 			];
 			
-			$splitedFromSinglePinyins = self::SplitSinglePinyin($str, $entireWholePinyins, $splitNotWholePinyin);
+			$splitedFromSinglePinyins = $this->_splitSinglePinyin($str);
 			foreach($splitedFromSinglePinyins as $splitedFromSinglePinyin){
 				if(str_replace(' ', '', $splitedFromSinglePinyin) == $str){
 					$pinyins['chars'] = array_merge($pinyins['chars'], explode(' ', $splitedFromSinglePinyin));
