@@ -89,7 +89,7 @@ class SmartPinyinBase
 	protected $_entire_whole_pinyins = [];
 	protected $_assoc = [];
 	protected $_assoc_capital = [];
-	protected $_chars = [];
+	protected $_chars = ['all' => [], 'pinyin' => [], 'cn' => [], 'others' => []];
 	protected $_chars_capital = [];
 	
 	
@@ -139,7 +139,7 @@ class SmartPinyinBase
 	{
 		$this->_assoc = [];
 		$this->_assoc_capital = [];
-		$this->_chars = [];
+		$this->_chars = ['all' => [], 'pinyin' => [], 'cn' => [], 'others' => []];
 		$this->_chars_capital = [];
 		$this->_value_splited = [];
 	}
@@ -363,8 +363,9 @@ class SmartPinyinBase
 		
 		foreach($char as $c){
 		    if(self::IsAllChinese($c)){
-		        if(!in_array($c, $this->_chars)){
-		          $this->_chars[] = $c;
+		        if(!in_array($c, $this->_chars['all'])){
+		            $this->_chars['all'][] = $c;
+		            $this->_chars['cn'][] = $c;
 		        }
 		    }else{
 		        $glue = isset($this->_glues[0])? $this->_glues[0] : ' ';
@@ -372,29 +373,31 @@ class SmartPinyinBase
 		            foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
 		                $cccFilterPunctuations = str_replace($this->_punctuations, '', $ccc);
 		                $cccCapital = substr($ccc, 0, 1);
-		                if(!in_array($cccFilterPunctuations, $this->_chars)){
+		                if(!in_array($cccFilterPunctuations, $this->_chars['all'])){
 		                    if(self::IsAllChinese($cccFilterPunctuations)){
 		                        if($this->_collect_cn_char){
-		                            $this->_chars[] = $cccFilterPunctuations;
+		                            $this->_chars['all'][] = $cccFilterPunctuations;
+		                            $this->_chars['cn'][] = $cccFilterPunctuations;
 		                        }
 		                    }else{
+		                        foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
+		                            foreach(WHOLE_SM_YMS as $smym){
+		                                preg_match('/^('.$ym.'|(?:'.$smym.')+)/', $cccFilterPunctuations, $match);
+		                                if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
+		                                    $this->_chars['all'][] = $cccFilterPunctuations;
+		                                    $this->_chars['pinyin'][] = $cccFilterPunctuations;
+		                                    if(!in_array($cccCapital, $this->_chars_capital)){
+		                                        $this->_chars_capital[] = $cccCapital;
+		                                    }
+		                                    goto __GOTO_NEXT_CC;
+		                                }
+		                            }
+		                        }
 		                        if($this->_collect_not_pinyin_abc_char){
-		                            $this->_chars[] = $cccFilterPunctuations;
+		                            $this->_chars['all'][] = $cccFilterPunctuations;
+		                            $this->_chars['others'][] = $cccFilterPunctuations;
 		                            if(!in_array($cccCapital, $this->_chars_capital)){
 		                                $this->_chars_capital[] = $cccCapital;
-		                            }
-		                        }else{
-		                            foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
-		                                foreach(WHOLE_SM_YMS as $smym){
-		                                    preg_match('/^('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
-		                                    if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
-		                                        $this->_chars[] = $cccFilterPunctuations;
-		                                        if(!in_array($cccCapital, $this->_chars_capital)){
-		                                            $this->_chars_capital[] = $cccCapital;
-		                                        }
-		                                        goto __GOTO_NEXT_CC;
-		                                    }
-		                                }
 		                            }
 		                        }
 		                    }

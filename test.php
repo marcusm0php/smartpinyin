@@ -8,7 +8,7 @@ $smartPinyin->setGlues([' ']);
 $smartPinyin->setFiltersReplacement([
     ' ' => [',', '.', '-']     // replace ,.- to empty string, 
 ]);
-// $smartPinyin->setPunctuations([',', '.', '-']);
+$smartPinyin->setPunctuations([',', '.', '-']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 $smartPinyin->setSingleYmCharSplit(true);
@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll('ANGLO-CARIBBEAN CO., LTD.');
+$batchRet = $smartPinyin->batchSetDataAssocAll('pinyin 阿cat斯,顿,.颗粒.机asdmasd发射sj AERO-CARIBBEAN');
 var_dump($batchRet);
 
 
