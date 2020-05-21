@@ -382,7 +382,21 @@ class SmartPinyinBase
 		                    }else{
 		                        foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
 		                            foreach(WHOLE_SM_YMS as $smym){
-		                                preg_match('/^('.$ym.'|(?:'.$smym.')+)/', $cccFilterPunctuations, $match);
+		                                // pinyinz组存放 1～多个字数的拼音
+		                                // others组存放2～多个字数的拼音
+		                                preg_match('/((?:'.$ym.'|(?:'.$smym.')){2,})/', $cccFilterPunctuations, $match);
+		                                if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
+		                                    $this->_chars['all'][] = $cccFilterPunctuations;
+		                                    $this->_chars['pinyin'][] = $cccFilterPunctuations;
+		                                    $this->_chars['all'][] = $cccFilterPunctuations;
+		                                    $this->_chars['others'][] = $cccFilterPunctuations;
+		                                    if(!in_array($cccCapital, $this->_chars_capital)){
+		                                        $this->_chars_capital[] = $cccCapital;
+		                                    }
+		                                    goto __GOTO_NEXT_CC;
+		                                }
+		                                
+		                                preg_match('/('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
 		                                if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
 		                                    $this->_chars['all'][] = $cccFilterPunctuations;
 		                                    $this->_chars['pinyin'][] = $cccFilterPunctuations;
