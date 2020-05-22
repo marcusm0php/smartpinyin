@@ -5,9 +5,9 @@ use SmartPinyin\SmartPinyin as SmartPinyin;
 
 $smartPinyin = new SmartPinyin();
 $smartPinyin->setGlues([' ']);
-// $smartPinyin->setFiltersReplacement([
-//     ' ' => [',', '.', '-']     // replace ,.- to empty string, 
-// ]);
+$smartPinyin->setFiltersReplacement([
+    ' ' => [',', '.', '-']     // replace ,.- to empty string, 
+]);
 $smartPinyin->setPunctuations([',', '.', '-']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll('mao wei long');
+$batchRet = $smartPinyin->batchSetDataAssocAll('mao, wei. long jimgreen');
 var_dump($batchRet);
 
 

@@ -488,7 +488,7 @@ class SmartPinyinBase
 		$this->_value_splited = array_filter($this->_value_splited);
 
 		$this->pushChar($this->_value_splited);
-		$this->pushChar(implode('', $this->_value_splited));
+// 		$this->pushChar(implode('', $this->_value_splited));
 	}
 	
 	public function assocSelf($tolowercase = true)
@@ -689,27 +689,22 @@ class SmartPinyinBase
 				}
 			}
 			
-			$combsCloseto = [];
 			$combs = $this->_charPinYinsComb($charPinyin, $glue);
+			$combsSupplement = [];
 			$punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
 			foreach($combs as $k => $comb){
-			    $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
-			    $combs[] = str_replace($this->_glues, '', $combs[$k]);
-			    $combChars = explode($glue, $comb);
-			    foreach($combChars as $combChar){
-			        $combsCloseto[] = $combChar;
-			    }
+// 			    $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
+			    $combsSupplement[] = str_replace($this->_glues, '', $combs[$k]);
+			    $combsSupplement[] = str_replace(array_merge($this->_glues, $this->_punctuations), '', $combs[$k]);
 			    
 			    if(!empty($this->_punctuations)){
 			        $combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
-			        $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
 			    }
 			}
 			
 			$combs = array_filter(array_unique($combs));
 			$this->pushAssoc($combs);
-			$combsCloseto = array_filter(array_unique($combsCloseto));
-			$this->pushChar($combsCloseto);
+			$this->pushAssoc($combsSupplement);
 		}
 	}
 	
