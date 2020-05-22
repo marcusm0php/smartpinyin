@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll('pinyin pin yin AERO-CARIBBEAN');
+$batchRet = $smartPinyin->batchSetDataAssocAll('mao we');
 var_dump($batchRet);
 
 

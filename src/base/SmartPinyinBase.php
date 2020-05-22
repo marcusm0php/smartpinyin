@@ -36,7 +36,7 @@ define('SM_YM_LEN4231', '(?:'.SM_YM_LEN4.'|'.SM_YM_LEN2.'|'.SM_YM_LEN3.'|'.SM_YM
 define('SM_YM_LEN4312', '(?:'.SM_YM_LEN4.'|'.SM_YM_LEN3.'|'.SM_YM_LEN1.'|'.SM_YM_LEN2.')');
 define('SM_YM_LEN4321', '(?:'.SM_YM_LEN4.'|'.SM_YM_LEN3.'|'.SM_YM_LEN2.'|'.SM_YM_LEN1.')');
 define('WHOLE_SM_YMS', [
-    'SM_YM_LEN4123' => SM_YM_LEN4123, 'SM_YM_LEN4132' => SM_YM_LEN4132, 'SM_YM_LEN4213' => SM_YM_LEN4213, 'SM_YM_LEN4231' => SM_YM_LEN4231, 'SM_YM_LEN4312' => SM_YM_LEN4312, 'SM_YM_LEN4321' => SM_YM_LEN4321,
+    'SM_YM_LEN4321' => SM_YM_LEN4321, 'SM_YM_LEN4123' => SM_YM_LEN4123, 'SM_YM_LEN4132' => SM_YM_LEN4132, 'SM_YM_LEN4213' => SM_YM_LEN4213, 'SM_YM_LEN4231' => SM_YM_LEN4231, 'SM_YM_LEN4312' => SM_YM_LEN4312, 
     'SM_YM_LEN3124' => SM_YM_LEN3124, 'SM_YM_LEN3142' => SM_YM_LEN3142, 'SM_YM_LEN3214' => SM_YM_LEN3214, 'SM_YM_LEN3241' => SM_YM_LEN3241, 'SM_YM_LEN3412' => SM_YM_LEN3412, 'SM_YM_LEN3421' => SM_YM_LEN3421,
     'SM_YM_LEN2134' => SM_YM_LEN2134, 'SM_YM_LEN2143' => SM_YM_LEN2143, 'SM_YM_LEN2314' => SM_YM_LEN2314, 'SM_YM_LEN2341' => SM_YM_LEN2341, 'SM_YM_LEN2413' => SM_YM_LEN2413, 'SM_YM_LEN2431' => SM_YM_LEN2431,
 	'SM_YM_LEN1234' => SM_YM_LEN1234, 'SM_YM_LEN1243' => SM_YM_LEN1243, 'SM_YM_LEN1324' => SM_YM_LEN1324, 'SM_YM_LEN1342' => SM_YM_LEN1342, 'SM_YM_LEN1432' => SM_YM_LEN1432, 'SM_YM_LEN1423' => SM_YM_LEN1423,
@@ -382,24 +382,20 @@ class SmartPinyinBase
 		                    }else{
 		                        foreach(SINGLE_INDIVIDUAL_CHAR_YMS as $k => $ym){
 		                            foreach(WHOLE_SM_YMS as $smym){
-		                                // pinyinz组存放 1～多个字数的拼音
-		                                // others组存放2～多个字数的拼音
-		                                preg_match('/((?:'.$ym.'|(?:'.$smym.')){2,})/', $cccFilterPunctuations, $match);
+		                                preg_match('/('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
 		                                if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
 		                                    $this->_chars['all'][] = $cccFilterPunctuations;
 		                                    $this->_chars['pinyin'][] = $cccFilterPunctuations;
-		                                    $this->_chars['all'][] = $cccFilterPunctuations;
-		                                    $this->_chars['others'][] = $cccFilterPunctuations;
 		                                    if(!in_array($cccCapital, $this->_chars_capital)){
 		                                        $this->_chars_capital[] = $cccCapital;
 		                                    }
 		                                    goto __GOTO_NEXT_CC;
 		                                }
 		                                
-		                                preg_match('/('.$ym.'|(?:'.$smym.'))/', $cccFilterPunctuations, $match);
+		                                preg_match('/((?:'.$ym.'|(?:'.$smym.')){2,})/', $cccFilterPunctuations, $match);
 		                                if(!empty($match[0]) && $match[0] == $cccFilterPunctuations){
 		                                    $this->_chars['all'][] = $cccFilterPunctuations;
-		                                    $this->_chars['pinyin'][] = $cccFilterPunctuations;
+		                                    $this->_chars['others'][] = $cccFilterPunctuations;
 		                                    if(!in_array($cccCapital, $this->_chars_capital)){
 		                                        $this->_chars_capital[] = $cccCapital;
 		                                    }
