@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll(' wei long');
+$batchRet = $smartPinyin->batchSetDataAssocAll('mao, wei , nimen 我们 jimgreen');
 var_dump($batchRet);
 
 

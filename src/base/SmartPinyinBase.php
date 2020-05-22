@@ -694,6 +694,10 @@ class SmartPinyinBase
 			$punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
 			foreach($combs as $k => $comb){
 			    $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
+			    $combChars = explode($glue, $comb);
+			    foreach($combChars as $combChar){
+			        $combsCloseto[] = $combChar;
+			    }
 			    
 			    if(!empty($this->_punctuations)){
 			        $combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
@@ -704,7 +708,6 @@ class SmartPinyinBase
 			$combs = array_unique($combs);
 			$this->pushAssoc($combs);
 			$combsCloseto = array_filter(array_unique($combsCloseto));
-			$this->pushAssoc($combsCloseto);
 			$this->pushChar($combsCloseto);
 		}
 	}
