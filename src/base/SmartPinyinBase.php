@@ -372,6 +372,9 @@ class SmartPinyinBase
 		        foreach(explode($glue, $c) as $cc){
 		            foreach(explode(self::PINYIN_YUNMU_SPLIT, $cc) as $ccc){
 		                $cccFilterPunctuations = str_replace($this->_punctuations, '', $ccc);
+		                if(empty($cccFilterPunctuations)){
+		                    continue;
+		                }
 		                $cccCapital = substr($ccc, 0, 1);
 		                if(!in_array($cccFilterPunctuations, $this->_chars['all'])){
 		                    if(self::IsAllChinese($cccFilterPunctuations)){
@@ -485,6 +488,7 @@ class SmartPinyinBase
 		$this->_value_splited = array_filter($this->_value_splited);
 
 		$this->pushChar($this->_value_splited);
+		$this->pushChar(implode('', $this->_value_splited));
 	}
 	
 	public function assocSelf($tolowercase = true)
@@ -602,9 +606,13 @@ class SmartPinyinBase
 					}
 					
 					$this->pushChar($pinyins);
+					
 					foreach($pinyins as $pinyin){
 						if(self::IsAllChinese($charWithoutPunctuations)){
-							$charPinyin[$k_char][] = str_replace($charPunctuations, '', $pinyin) . $charPunctuations;
+						    $pinyinWithoutP = str_replace($charPunctuations, '', $pinyin);
+						    if(!empty($pinyinWithoutP)){
+						        $charPinyin[$k_char][] = $pinyinWithoutP . $charPunctuations;
+						    }
 						}else{
 							$pinyinAnalyzers = $this->_pinyinAnalyzer($pinyin);
 							
@@ -681,18 +689,23 @@ class SmartPinyinBase
 				}
 			}
 			
+			$combsCloseto = [];
 			$combs = $this->_charPinYinsComb($charPinyin, $glue);
-			
-			if(!empty($this->_punctuations)){
-				$punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
-				foreach($combs as $k => $comb){
-					$combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
-				}
+			$punctuationReplaceSearch = '/[\\'. implode('\\', $this->_glues) .']([\\'. implode('\\', $this->_punctuations) .']+)/';
+			foreach($combs as $k => $comb){
+			    $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
+			    
+			    if(!empty($this->_punctuations)){
+			        $combs[$k] = preg_replace($punctuationReplaceSearch, '\1', $comb);
+			        $combsCloseto[] = str_replace($this->_glues, '', $combs[$k]);
+			    }
 			}
 			
 			$combs = array_unique($combs);
-			
 			$this->pushAssoc($combs);
+			$combsCloseto = array_filter(array_unique($combsCloseto));
+			$this->pushAssoc($combsCloseto);
+			$this->pushChar($combsCloseto);
 		}
 	}
 	
