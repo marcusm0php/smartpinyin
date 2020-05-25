@@ -364,8 +364,10 @@ class SmartPinyinBase
 		foreach($char as $c){
 		    if(self::IsAllChinese($c)){
 		        if(!in_array($c, $this->_chars['all'])){
-		            $this->_chars['all'][] = $c;
-		            $this->_chars['cn'][] = $c;
+		            if($this->_collect_cn_char){
+    		            $this->_chars['all'][] = $c;
+    		            $this->_chars['cn'][] = $c;
+		            }
 		        }
 		    }else{
 		        $glue = isset($this->_glues[0])? $this->_glues[0] : ' ';

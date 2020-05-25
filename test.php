@@ -12,7 +12,7 @@ $smartPinyin->setPunctuations([',', '.', '-']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 $smartPinyin->setSingleYmCharSplit(true);
-$smartPinyin->setCollectCnChar(true);
+$smartPinyin->setCollectCnChar(false);
 $smartPinyin->setCollectNotPinyinAbcChar(true);
 // $smartPinyin->setSplitNotWholePinyin(true);
 $smartPinyin->addEntireWholePinyins([
@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll('mao, wei. long jimgreen');
+$batchRet = $smartPinyin->batchSetDataAssocAll('买');
 var_dump($batchRet);
 
 
