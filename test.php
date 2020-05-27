@@ -5,18 +5,18 @@ use SmartPinyin\SmartPinyin as SmartPinyin;
 
 $smartPinyin = new SmartPinyin();
 $smartPinyin->setGlues([' ']);
-$smartPinyin->setFiltersReplacement([
-    ' ' => [',', '.', '-']     // replace ,.- to empty string, 
-]);
+// $smartPinyin->setFiltersReplacement([
+//     ' ' => [',', '.', '-']     // replace ,.- to empty string, 
+// ]);
 $smartPinyin->setPunctuations([',', '.', '-']);
 // $smartPinyin->setDynamicGlue(true);
 // $smartPinyin->setSupplementScope([SmartPinyin::SCOPE_DUOYINZI]);
 $smartPinyin->setSingleYmCharSplit(true);
-$smartPinyin->setCollectCnChar(false);
+$smartPinyin->setCollectCnChar(true);
 $smartPinyin->setCollectNotPinyinAbcChar(true);
 // $smartPinyin->setSplitNotWholePinyin(true);
 $smartPinyin->addEntireWholePinyins([
-    'ao', 'iao', 'iang', 'ian', 'ua', 'uo', 'ie', 'ou', 'ue', 'uen', 'uan', 'uang', 
+    'ao', 'iao', 'iang', 'ian', 'ua', 'uo', 'ie', 'ou', 'ue', 'uen', 'uan', 'uang', 'ia', 
         'ae', 'ea', 'eo', 'oe', 'eu', 'ue', 'au', 'ua'
 //     'ao', 'iao', 'ou', 'ie', 'hu', 'ia', 'iang', 'uo', 'ua', 
 //     'mao', 'lao', 'bao', 'kao', 'zao', 'cao', 'yao', 'pao', 'nao', 'tao', 'hao', 'gao', 'dao', 'sao',  
@@ -42,7 +42,7 @@ $smartPinyin->addEntireWholePinyins([
 // var_dump($assocCapital, $charsCapital);
 
 
-$batchRet = $smartPinyin->batchSetDataAssocAll('买');
+$batchRet = $smartPinyin->batchSetDataAssocAll('你,aklsdj, hanwo, 姐,哈好 ,jiayou');
 var_dump($batchRet);
 
 

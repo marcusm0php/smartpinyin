@@ -168,7 +168,7 @@ class SmartPinyinBase
 		$this->setData($value);
 		$this->assocSelf();
 		$this->assocPinyin();
-// 		$this->assocPinyinKeepCn();
+		$this->assocPinyinKeepCn();
 		
 		return $this->fetchAll($fetchAssoc, $fetchChars, $fetchAssocCapital, $fetchCharsCapital);
 	}
@@ -710,17 +710,6 @@ class SmartPinyinBase
 		}
 	}
 	
-	/**
-	 * 
-	 * @param Array $charPinyins
-	 * @param string $glues
-	 * @param string $dynamicGlue
-	 *	  能使拼音按照不同有/无glue的排列组合生成
-	 *	  假如$glues=['', ' ']
-	 *	  当$dynamicGlue=true,  那么针对第二个' '， 刘慈欣将被排列组合为:  1.liucixin  2.liu cixin  3.liuci xin  4.liu ci xin
-	 *	  当$dynamicGlue=false, 刘慈欣将被排列组合为:  1.liucixin  2.liu ci xin
-	 * @return string[]|unknown[]
-	 */
 	protected function _charPinYinsComb($charPinyins, $glues = ' ', $deep = 0)
 	{
 		$ret = [];
@@ -792,8 +781,9 @@ class SmartPinyinBase
 		if($deep == 0){
 			foreach($glues as $glue){
 				if(!empty($glue)){
-					foreach($ret as $k => $v){
-						$ret[$k] = str_replace($glue . self::PINYIN_YUNMU_SPLIT, $glue, $v);
+				    foreach($ret as $k => $v){
+				        $ret[$k] = str_replace($glue . self::PINYIN_YUNMU_SPLIT, $glue, $v);
+				        $ret[$k] = preg_replace('/([\x{4e00}-\x{9fa5}])'.$glue.'+([\x{4e00}-\x{9fa5}])/u', '\1\2', $v);
 					}
 				}
 			}
